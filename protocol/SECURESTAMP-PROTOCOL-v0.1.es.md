@@ -1,6 +1,12 @@
 # SecureStamp Protocol v0.1
 
-**Estado:** Borrador  
+> **⚠️ Reemplazado (histórico).** Este es el spec original de la **capa de confianza de
+> email**. Sigue siendo válido e implementado, pero ahora es una *entrada* del protocolo
+> más amplio y no su totalidad. Para el encuadre actual — Proof-of-Intent, MCP Guard,
+> Action Receipts canónicos — leé **[Protocolo v0.2](SECURESTAMP-PROTOCOL-v0.2.es.md)**.
+> Ver [ADR-005](../adr/ADR-005-proof-of-intent-pivot.es.md) para el porqué.
+
+**Estado:** Borrador (reemplazado por v0.2)  
 **Fecha:** 2026-05-24  
 **Mantenido por:** SecureStamp Foundation  
 **Repositorio:** https://github.com/securestamp/protocol

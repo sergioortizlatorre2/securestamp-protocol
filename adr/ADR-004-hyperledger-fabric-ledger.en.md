@@ -1,7 +1,17 @@
 # ADR-004: Hyperledger Fabric as the immutable ledger for the SecureStamp protocol
 
+> **⚠️ Roadmap / non-normative (2026-07-09).** Hyperledger Fabric is **not** the shipped
+> substrate. The immutability mechanism that actually runs today is an **append-only
+> Merkle transparency log** with inclusion and consistency proofs (backing Key
+> Transparency for E2EE identity keys and channel-trust transparency) — see
+> [Protocol v0.2 §9](../protocol/SECURESTAMP-PROTOCOL-v0.2.en.md). A permissioned Fabric
+> ledger remains a **future** option for a multi-operator federation; no conformance is
+> claimed for it. This ADR is retained as the record of that proposal. The v0.1 stamp
+> assets it references (`StampIssuance`/`StampRevocation`/`ScoreChange`) belong to the
+> superseded email-trust framing (see [ADR-005](ADR-005-proof-of-intent-pivot.en.md)).
+
 ## Status
-Accepted — 2026-05-24
+Proposed / roadmap — reframed 2026-07-09 (originally "Accepted — 2026-05-24"; not shipped)
 
 ## Context
 

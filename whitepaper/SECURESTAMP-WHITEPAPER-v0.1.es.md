@@ -1,6 +1,12 @@
 # SecureStamp: Una capa de confianza para las comunicaciones digitales
 
-**Versión:** 0.1 — Borrador  
+> **⚠️ Reemplazado (histórico).** Este whitepaper describe la **capa de confianza de
+> email** original. El protocolo pivoteó desde entonces a **Proof-of-Intent** —
+> verificar la acción, no el mensaje. Para la narrativa y el manifiesto actuales, leé
+> **[Whitepaper v0.2](SECURESTAMP-WHITEPAPER-v0.2.es.md)**. Ver
+> [ADR-005](../adr/ADR-005-proof-of-intent-pivot.es.md) para el porqué.
+
+**Versión:** 0.1 — Borrador (reemplazado por v0.2)  
 **Fecha:** Mayo 2026  
 **Autores:** SecureStamp Foundation  
 **Licencia:** CC BY 4.0

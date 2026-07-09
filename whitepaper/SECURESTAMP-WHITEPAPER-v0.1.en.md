@@ -1,6 +1,12 @@
 # SecureStamp: A Trust Layer for Digital Communications
 
-**Version:** 0.1 — Draft  
+> **⚠️ Superseded (historical).** This whitepaper describes the original **email trust
+> layer**. The protocol has since pivoted to **Proof-of-Intent** — verifying the action,
+> not the message. For the current narrative and manifesto, read
+> **[Whitepaper v0.2](SECURESTAMP-WHITEPAPER-v0.2.en.md)**. See
+> [ADR-005](../adr/ADR-005-proof-of-intent-pivot.en.md) for why.
+
+**Version:** 0.1 — Draft (superseded by v0.2)  
 **Date:** May 2026  
 **Authors:** SecureStamp Foundation  
 **License:** CC BY 4.0

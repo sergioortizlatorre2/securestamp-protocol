@@ -2,162 +2,271 @@
 
 **[English](#english) · [Español](#español)**
 
+> **Do not trust the message. Verify the action.**
+> **No agent action without Proof-of-Intent.**
+
 ---
 
 ## English
 
-### A trust layer for digital communications
+### Proof-of-Intent for the AI era
 
-SecureStamp is an open protocol that allows email senders to publish a verifiable cryptographic trust seal (`stamp`), and allows recipients or intermediary systems to independently verify that seal.
+**SecureStamp is a Proof-of-Intent protocol for the AI era.**
+**Do not trust the message. Verify the action.**
+**No agent action without Proof-of-Intent.**
 
-The protocol operates on existing DNS and SMTP infrastructure, without replacing SPF, DKIM, or DMARC — it complements them.
-
-### Why SecureStamp?
-
-An email that passes SPF, DKIM, and DMARC can still be a phishing attack. An attacker registers `acmec0rp.com`, configures the three protocols correctly, and sends emails that look legitimate. There is no open standard for "this domain is who it claims to be."
-
-SecureStamp adds a fourth layer: a verifiable, cryptographic, human-readable seal.
-
-### How it works
+It is an open protocol that verifies a **sensitive action** before it happens — whether a
+person, an organization, or an AI agent is about to execute it. It checks five dimensions
+of the action:
 
 ```
-Sender domain                     Recipient / System
-──────────────────                ─────────────────────────────────
-_securestamp.acme.com  ──DNS──►  Resolve TXT → get stampId
-X-SecureStamp: token   ──SMTP──► Verify JWT signature → get score
-                                  GET /v1/trust/acme.com → check ledger
+intention · counterparty · channel · policy · action
 ```
 
-Three independent integration points:
-1. **DNS TXT** — `_securestamp.<domain>` record
-2. **Email header** — `X-SecureStamp: v=1; token=<jwt>`
-3. **REST API** — `GET https://securestamp.org/v1/trust/<domain>`
+and returns a **verdict** (`allow` / `needs_confirmation` / `block`). When the verdict is
+authoritative, SecureStamp can issue a **verifiable Action Receipt** that any third party
+can check.
 
-Trust scores (0–100) based on SPF, DKIM, DMARC, domain age, MX reputation, and behavioral history. All events (issuance, revocation, score changes) are recorded in a permissioned Hyperledger Fabric ledger — immutable, auditable, no cryptocurrency.
+SecureStamp **authorizes; it does not execute.** It is the checkpoint, not the actor.
+
+> SecureStamp began as an email and digital-communication trust layer and evolved into a
+> general-purpose Proof-of-Intent protocol for sensitive human and agentic actions. The
+> email seal is still valid (see v0.1 below) — SecureStamp is not email-only. Read
+> [ADR-005](adr/ADR-005-proof-of-intent-pivot.en.md) for the why, and
+> [Protocol v0.2](protocol/SECURESTAMP-PROTOCOL-v0.2.en.md) for the what.
+
+### Why it matters now
+
+A message that passes SPF, DKIM, and DMARC can still induce a harmful, irreversible
+action — a payment, a payout-detail change, an approval. And AI agents remove the human
+pause: they read a request and *act*. SecureStamp gives software a checkpoint to consult
+**before** it acts.
+
+### Three pillars
+
+| Pillar | For | Answers |
+|---|---|---|
+| **VendorShield** | finance & operations | *Is this counterparty and this money movement safe to act on?* |
+| **Guardian** | people & channels | *Is this inbound thing safe for a person to trust and act on?* |
+| **MCP Guard** | AI agents | *As an autonomous agent, am I allowed to do this?* |
+
+### MCP Guard — the Agent Trust Layer (production-live)
+
+A remote [Model Context Protocol](https://modelcontextprotocol.io) server agents consult
+before acting.
+
+- **Endpoint:** `https://mcp.securestamp.online/mcp`
+- **Tools:** `authorize_action`, `analyze_message_intent`, `verify_counterparty`,
+  `create_action_challenge`, `get_safe_next_step`, `issue_action_receipt`
+- **Auth:** API key (`ss_live_…`) for machines · delegated session (`ss_sess_…`) for a
+  human authorizing a client from their `.online` account · stdio wrapper for stdio-only
+  hosts
+
+```bash
+curl -sS https://mcp.securestamp.online/mcp \
+  -H "Authorization: Bearer ss_live_..." \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
+```
+
+### Verifiable receipts you can trust
+
+SecureStamp **never signs a verdict declared by the caller.** A receipt can only
+originate from a canonical verdict (`authorize_action` or an Action Challenge
+resolution). Verify one without an account:
+
+```bash
+curl https://securestamp.online/api/action/receipts/<receiptId>
+```
+
+See [ADR-006](adr/ADR-006-canonical-action-receipts.en.md).
+
+### Channels
+
+Email · Web · **Telegram** (live via configured channel integrations) · **WhatsApp**
+(live via configured channel integrations) · MCP hosts.
+
+Telegram and WhatsApp are supported through configured channel integrations for
+Proof-of-Intent workflows. Availability depends on the deployed SecureStamp channel
+connector and the policies of each messaging platform; SecureStamp claims no official or
+native partner status with either platform.
 
 ### Repository contents
 
 | Path | Description |
 |---|---|
-| [`protocol/`](protocol/) | SecureStamp Protocol specification |
-| [`protocol/SECURESTAMP-PROTOCOL-v0.1.en.md`](protocol/SECURESTAMP-PROTOCOL-v0.1.en.md) | Protocol spec (English) |
-| [`protocol/SECURESTAMP-PROTOCOL-v0.1.es.md`](protocol/SECURESTAMP-PROTOCOL-v0.1.es.md) | Protocol spec (Spanish) |
-| [`adr/`](adr/) | Architecture Decision Records |
-| [`adr/ADR-004-hyperledger-fabric-ledger.en.md`](adr/ADR-004-hyperledger-fabric-ledger.en.md) | Why Hyperledger Fabric (English) |
-| [`adr/ADR-004-hyperledger-fabric-ledger.es.md`](adr/ADR-004-hyperledger-fabric-ledger.es.md) | Why Hyperledger Fabric (Spanish) |
-| [`whitepaper/`](whitepaper/) | Whitepaper and manifesto |
-| [`whitepaper/SECURESTAMP-WHITEPAPER-v0.1.en.md`](whitepaper/SECURESTAMP-WHITEPAPER-v0.1.en.md) | Whitepaper (English) |
-| [`whitepaper/SECURESTAMP-WHITEPAPER-v0.1.es.md`](whitepaper/SECURESTAMP-WHITEPAPER-v0.1.es.md) | Whitepaper (Spanish) |
+| [`protocol/SECURESTAMP-PROTOCOL-v0.2.en.md`](protocol/SECURESTAMP-PROTOCOL-v0.2.en.md) | **Current** protocol spec — Proof-of-Intent (English) |
+| [`protocol/SECURESTAMP-PROTOCOL-v0.2.es.md`](protocol/SECURESTAMP-PROTOCOL-v0.2.es.md) | Current protocol spec (Spanish) |
+| [`whitepaper/SECURESTAMP-WHITEPAPER-v0.2.en.md`](whitepaper/SECURESTAMP-WHITEPAPER-v0.2.en.md) | **Current** whitepaper + manifesto (English) |
+| [`whitepaper/SECURESTAMP-WHITEPAPER-v0.2.es.md`](whitepaper/SECURESTAMP-WHITEPAPER-v0.2.es.md) | Current whitepaper + manifesto (Spanish) |
+| [`adr/ADR-005-proof-of-intent-pivot.en.md`](adr/ADR-005-proof-of-intent-pivot.en.md) | ADR — the pivot to Proof-of-Intent |
+| [`adr/ADR-006-canonical-action-receipts.en.md`](adr/ADR-006-canonical-action-receipts.en.md) | ADR — canonical Action Receipts (no caller-declared verdicts) |
+| [`adr/ADR-004-hyperledger-fabric-ledger.en.md`](adr/ADR-004-hyperledger-fabric-ledger.en.md) | ADR — Fabric ledger (**roadmap / non-normative**) |
+| [`protocol/SECURESTAMP-PROTOCOL-v0.1.en.md`](protocol/SECURESTAMP-PROTOCOL-v0.1.en.md) | v0.1 email trust layer (**historical**) |
+| [`whitepaper/SECURESTAMP-WHITEPAPER-v0.1.en.md`](whitepaper/SECURESTAMP-WHITEPAPER-v0.1.en.md) | v0.1 whitepaper (**historical**) |
 
-### Quick start
+### What is live, and what is not
 
-**Verify a domain (no account needed):**
-```bash
-curl https://securestamp.org/v1/trust/acmecorp.com
-```
+**Live:** MCP Guard production endpoint (both auth modes) · the six tools and verdict
+model · canonical Action Receipts with public verification · Telegram & WhatsApp
+Channel-Trust via configured channel integrations · append-only Merkle transparency logs
+(Key Transparency, channel-trust).
 
-**Add a DNS record for your domain:**
-```dns
-_securestamp.yourdomain.com.  3600  IN  TXT  "securestamp=v=1; id=<your-stamp-id>; url=https://securestamp.org/verify/<token>"
-```
+**Roadmap / not claimed:** verified conformance with any specific third-party MCP host or
+client (desktop agents, IDE copilots) — not independently smoke-tested · a published
+stdio wrapper on a public registry · marketplace listings · a permissioned distributed
+ledger (Fabric) as a multi-operator substrate.
 
-**Subscribe to threat alerts:**
-```
-POST https://securestamp.org/v1/alerts/subscribe
-```
+*We do not assert compatibility we have not verified end-to-end.*
 
 ### Links
 
 - 🌐 Foundation: [securestamp.org](https://securestamp.org)
 - 🚀 Product: [securestamp.online](https://securestamp.online)
 - 🎨 Marketplace: [securestamp.store](https://securestamp.store)
-- 📖 Full protocol: [SECURESTAMP-PROTOCOL-v0.1.en.md](protocol/SECURESTAMP-PROTOCOL-v0.1.en.md)
-- 📄 Whitepaper: [SECURESTAMP-WHITEPAPER-v0.1.en.md](whitepaper/SECURESTAMP-WHITEPAPER-v0.1.en.md)
+- 📖 Current protocol: [SECURESTAMP-PROTOCOL-v0.2.en.md](protocol/SECURESTAMP-PROTOCOL-v0.2.en.md)
+- 📄 Current whitepaper: [SECURESTAMP-WHITEPAPER-v0.2.en.md](whitepaper/SECURESTAMP-WHITEPAPER-v0.2.en.md)
 
 ### Contributing
 
-This repository is open. Protocol issues, ADR proposals, and pull requests are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md).
+This repository is open. Protocol issues, ADR proposals, and pull requests are welcome.
+See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ### License
 
-Protocol specification and documentation: [CC BY 4.0](LICENSE)
+Protocol specification and documentation: [CC BY 4.0](LICENSE).
+Technical collaboration: Ivan.
 
 ---
 
 ## Español
 
-### Una capa de confianza para las comunicaciones digitales
+### Proof-of-Intent para la era de la IA
 
-SecureStamp es un protocolo abierto que permite a los remitentes de email publicar un sello de confianza criptográfico y verificable (`stamp`), y permite a los receptores o sistemas intermedios verificar ese sello de forma independiente.
+**SecureStamp es un protocolo de Proof-of-Intent para la era de la IA.**
+**No se confía en el mensaje. Se verifica la acción.**
+**Ninguna acción de agente sin Proof-of-Intent.**
 
-El protocolo opera sobre la infraestructura existente de DNS y SMTP, sin reemplazar SPF, DKIM ni DMARC — los complementa.
-
-### ¿Por qué SecureStamp?
-
-Un email que pasa SPF, DKIM y DMARC puede seguir siendo un ataque de phishing. Un atacante registra `acmec0rp.com`, configura los tres protocolos correctamente y envía emails que parecen legítimos. No existe un estándar abierto para "este dominio es quien dice ser".
-
-SecureStamp agrega una cuarta capa: un sello verificable, criptográfico y legible por personas.
-
-### Cómo funciona
+Es un protocolo abierto que verifica una **acción sensible** antes de que ocurra — ya sea
+una persona, una organización o un agente de IA quien esté por ejecutarla. Comprueba cinco
+dimensiones de la acción:
 
 ```
-Dominio del remitente              Receptor / Sistema
-──────────────────                 ────────────────────────────────
-_securestamp.acme.com  ──DNS──►  Resolver TXT → obtener stampId
-X-SecureStamp: token   ──SMTP──► Verificar firma JWT → obtener score
-                                   GET /v1/trust/acme.com → check ledger
+intención · contraparte · canal · política · acción
 ```
 
-Tres puntos de integración independientes:
-1. **DNS TXT** — registro `_securestamp.<dominio>`
-2. **Header de email** — `X-SecureStamp: v=1; token=<jwt>`
-3. **REST API** — `GET https://securestamp.org/v1/trust/<dominio>`
+y devuelve un **veredicto** (`allow` / `needs_confirmation` / `block`). Cuando el
+veredicto es autoritativo, SecureStamp puede emitir un **Action Receipt verificable** que
+cualquier tercero puede comprobar.
 
-Scores de confianza (0–100) basados en SPF, DKIM, DMARC, antigüedad del dominio, reputación del MX e historial de comportamiento. Todos los eventos (emisión, revocación, cambios de score) se registran en un ledger Hyperledger Fabric permisionado — inmutable, auditable, sin criptomoneda.
+SecureStamp **autoriza; no ejecuta.** Es el checkpoint, no el actor.
+
+> SecureStamp comenzó como una capa de confianza para email y comunicaciones digitales, y
+> evolucionó hacia un protocolo general-purpose de Proof-of-Intent para acciones sensibles
+> humanas y agentic workflows. El sello de email sigue válido (ver v0.1 más abajo) —
+> SecureStamp no es sólo email. Leé
+> [ADR-005](adr/ADR-005-proof-of-intent-pivot.es.md) para el porqué, y
+> [Protocolo v0.2](protocol/SECURESTAMP-PROTOCOL-v0.2.es.md) para el qué.
+
+### Por qué importa ahora
+
+Un mensaje que pasa SPF, DKIM y DMARC puede aun así inducir una acción dañina e
+irreversible — un pago, un cambio de datos de payout, una aprobación. Y los agentes de IA
+eliminan la pausa humana: leen un pedido y *actúan*. SecureStamp le da al software un
+checkpoint para consultar **antes** de actuar.
+
+### Tres pilares
+
+| Pilar | Para | Responde |
+|---|---|---|
+| **VendorShield** | finanzas y operaciones | *¿Es seguro actuar sobre esta contraparte y este movimiento de dinero?* |
+| **Guardian** | personas y canales | *¿Es seguro que una persona confíe y actúe sobre esto que llegó?* |
+| **MCP Guard** | agentes de IA | *Como agente autónomo, ¿tengo permitido hacer esto?* |
+
+### MCP Guard — el Agent Trust Layer (productivo)
+
+Un servidor [Model Context Protocol](https://modelcontextprotocol.io) remoto que los
+agentes consultan antes de actuar.
+
+- **Endpoint:** `https://mcp.securestamp.online/mcp`
+- **Tools:** `authorize_action`, `analyze_message_intent`, `verify_counterparty`,
+  `create_action_challenge`, `get_safe_next_step`, `issue_action_receipt`
+- **Auth:** API key (`ss_live_…`) para máquinas · sesión delegada (`ss_sess_…`) para un
+  humano que autoriza un cliente desde su cuenta de `.online` · wrapper stdio para hosts
+  que sólo hablan stdio
+
+```bash
+curl -sS https://mcp.securestamp.online/mcp \
+  -H "Authorization: Bearer ss_live_..." \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
+```
+
+### Receipts verificables en los que confiar
+
+SecureStamp **nunca firma un veredicto declarado por el llamante.** Un receipt sólo puede
+originarse en un veredicto canónico (`authorize_action` o la resolución de un Action
+Challenge). Verificá uno sin cuenta:
+
+```bash
+curl https://securestamp.online/api/action/receipts/<receiptId>
+```
+
+Ver [ADR-006](adr/ADR-006-canonical-action-receipts.es.md).
+
+### Canales
+
+Email · Web · **Telegram** (vivo mediante integraciones de canal configuradas) ·
+**WhatsApp** (vivo mediante integraciones de canal configuradas) · hosts MCP.
+
+Telegram y WhatsApp están soportados mediante integraciones de canal configuradas para
+flujos de Proof-of-Intent. La disponibilidad depende del conector de canal desplegado por
+SecureStamp y de las políticas de cada plataforma de mensajería; SecureStamp no reclama
+estatus de partner oficial ni nativo con ninguna de las dos plataformas.
 
 ### Contenido del repositorio
 
 | Ruta | Descripción |
 |---|---|
-| [`protocol/`](protocol/) | Especificación del protocolo SecureStamp |
-| [`protocol/SECURESTAMP-PROTOCOL-v0.1.en.md`](protocol/SECURESTAMP-PROTOCOL-v0.1.en.md) | Spec del protocolo (inglés) |
-| [`protocol/SECURESTAMP-PROTOCOL-v0.1.es.md`](protocol/SECURESTAMP-PROTOCOL-v0.1.es.md) | Spec del protocolo (español) |
-| [`adr/`](adr/) | Architecture Decision Records |
-| [`adr/ADR-004-hyperledger-fabric-ledger.en.md`](adr/ADR-004-hyperledger-fabric-ledger.en.md) | Por qué Hyperledger Fabric (inglés) |
-| [`adr/ADR-004-hyperledger-fabric-ledger.es.md`](adr/ADR-004-hyperledger-fabric-ledger.es.md) | Por qué Hyperledger Fabric (español) |
-| [`whitepaper/`](whitepaper/) | Whitepaper y manifiesto |
-| [`whitepaper/SECURESTAMP-WHITEPAPER-v0.1.en.md`](whitepaper/SECURESTAMP-WHITEPAPER-v0.1.en.md) | Whitepaper (inglés) |
-| [`whitepaper/SECURESTAMP-WHITEPAPER-v0.1.es.md`](whitepaper/SECURESTAMP-WHITEPAPER-v0.1.es.md) | Whitepaper (español) |
+| [`protocol/SECURESTAMP-PROTOCOL-v0.2.es.md`](protocol/SECURESTAMP-PROTOCOL-v0.2.es.md) | Spec **actual** del protocolo — Proof-of-Intent (español) |
+| [`protocol/SECURESTAMP-PROTOCOL-v0.2.en.md`](protocol/SECURESTAMP-PROTOCOL-v0.2.en.md) | Spec actual del protocolo (inglés) |
+| [`whitepaper/SECURESTAMP-WHITEPAPER-v0.2.es.md`](whitepaper/SECURESTAMP-WHITEPAPER-v0.2.es.md) | Whitepaper + manifiesto **actual** (español) |
+| [`whitepaper/SECURESTAMP-WHITEPAPER-v0.2.en.md`](whitepaper/SECURESTAMP-WHITEPAPER-v0.2.en.md) | Whitepaper + manifiesto actual (inglés) |
+| [`adr/ADR-005-proof-of-intent-pivot.es.md`](adr/ADR-005-proof-of-intent-pivot.es.md) | ADR — el pivot a Proof-of-Intent |
+| [`adr/ADR-006-canonical-action-receipts.es.md`](adr/ADR-006-canonical-action-receipts.es.md) | ADR — Action Receipts canónicos (sin veredictos del llamante) |
+| [`adr/ADR-004-hyperledger-fabric-ledger.es.md`](adr/ADR-004-hyperledger-fabric-ledger.es.md) | ADR — ledger Fabric (**roadmap / no-normativo**) |
+| [`protocol/SECURESTAMP-PROTOCOL-v0.1.es.md`](protocol/SECURESTAMP-PROTOCOL-v0.1.es.md) | v0.1 capa de confianza de email (**histórico**) |
+| [`whitepaper/SECURESTAMP-WHITEPAPER-v0.1.es.md`](whitepaper/SECURESTAMP-WHITEPAPER-v0.1.es.md) | Whitepaper v0.1 (**histórico**) |
 
-### Quick start
+### Qué está live, y qué no
 
-**Verificar un dominio (sin cuenta):**
-```bash
-curl https://securestamp.org/v1/trust/acmecorp.com
-```
+**Live:** endpoint de producción de MCP Guard (ambos modos de auth) · las seis tools y el
+modelo de veredicto · Action Receipts canónicos con verificación pública · Channel-Trust
+de Telegram y WhatsApp mediante integraciones de canal configuradas · logs de
+transparencia append-only Merkle (Key
+Transparency, channel-trust).
 
-**Agregar un registro DNS para tu dominio:**
-```dns
-_securestamp.tudominio.com.  3600  IN  TXT  "securestamp=v=1; id=<tu-stamp-id>; url=https://securestamp.org/verify/<token>"
-```
+**Roadmap / no reclamado:** conformidad verificada con cualquier host o cliente MCP de
+terceros específico (agentes de escritorio, copilotos de IDE) — no probado con smoke
+independiente · un wrapper stdio publicado en un registro público · listados en
+marketplaces · un ledger distribuido permisionado (Fabric) como sustrato multi-operador.
 
-**Suscribirse a alertas de amenazas:**
-```
-POST https://securestamp.org/v1/alerts/subscribe
-```
+*No afirmamos compatibilidad que no hayamos verificado end-to-end.*
 
 ### Links
 
 - 🌐 Fundación: [securestamp.org](https://securestamp.org)
 - 🚀 Producto: [securestamp.online](https://securestamp.online)
 - 🎨 Marketplace: [securestamp.store](https://securestamp.store)
-- 📖 Protocolo completo: [SECURESTAMP-PROTOCOL-v0.1.es.md](protocol/SECURESTAMP-PROTOCOL-v0.1.es.md)
-- 📄 Whitepaper: [SECURESTAMP-WHITEPAPER-v0.1.es.md](whitepaper/SECURESTAMP-WHITEPAPER-v0.1.es.md)
+- 📖 Protocolo actual: [SECURESTAMP-PROTOCOL-v0.2.es.md](protocol/SECURESTAMP-PROTOCOL-v0.2.es.md)
+- 📄 Whitepaper actual: [SECURESTAMP-WHITEPAPER-v0.2.es.md](whitepaper/SECURESTAMP-WHITEPAPER-v0.2.es.md)
 
 ### Contribuir
 
-Este repositorio es abierto. Issues sobre el protocolo, propuestas de ADR y pull requests son bienvenidos.
+Este repositorio es abierto. Issues sobre el protocolo, propuestas de ADR y pull requests
+son bienvenidos. Ver [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ### Licencia
 
-Especificación del protocolo y documentación: [CC BY 4.0](LICENSE)
+Especificación del protocolo y documentación: [CC BY 4.0](LICENSE).
+Colaboración técnica: Ivan.

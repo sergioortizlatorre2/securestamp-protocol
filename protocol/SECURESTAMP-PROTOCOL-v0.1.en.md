@@ -1,6 +1,12 @@
 # SecureStamp Protocol v0.1
 
-**Status:** Draft  
+> **⚠️ Superseded (historical).** This is the original **email trust layer** spec. It
+> remains valid and implemented, but is now an *input* to the broader protocol rather
+> than the whole of it. For the current framing — Proof-of-Intent, MCP Guard, canonical
+> Action Receipts — read **[Protocol v0.2](SECURESTAMP-PROTOCOL-v0.2.en.md)**. See
+> [ADR-005](../adr/ADR-005-proof-of-intent-pivot.en.md) for why.
+
+**Status:** Draft (superseded by v0.2)  
 **Date:** 2026-05-24  
 **Maintained by:** SecureStamp Foundation  
 **Repository:** https://github.com/securestamp/protocol
