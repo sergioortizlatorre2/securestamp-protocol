@@ -5,9 +5,11 @@
 > **Do not trust the message. Verify the action.**
 > **No agent action without Proof-of-Intent.**
 
-<sub>Endpoints, tool catalog, npm dist-tags and on-device engine versions on this page were
-checked against the live services and the public npm registry on **2026-09-06**. Where a claim
-is not verified, it is listed under [What is live, and what is not](#what-is-live-and-what-is-not).</sub>
+<sub>Every endpoint, tool name, dist-tag and version on this page was checked against the deployed
+services and the public npm registry on **2026-09-06** — including downloading and opening the
+published tarballs. Anything that could not be verified is listed under
+[Live / prerelease / pending](#live--prerelease--pending), together with the defects that check
+turned up.</sub>
 
 ---
 
@@ -19,10 +21,12 @@ is not verified, it is listed under [What is live, and what is not](#what-is-liv
 | --- | --- |
 | Understand the idea in five minutes | this page |
 | **Connect an agent, copilot or MCP host** | **[Getting Started](developers/GETTING-STARTED.en.md)** |
+| **Check a domain from the terminal right now** | [The CLI](#the-cli) — no API key needed |
 | Install the packages | [npm packages](#npm-packages) — *read the dist-tag note first* |
 | Verify a receipt or a proof bundle offline | [Getting Started §5](developers/GETTING-STARTED.en.md#5-verify-without-an-account) |
 | Read the normative protocol spec | [Protocol v0.2](protocol/SECURESTAMP-PROTOCOL-v0.2.en.md) |
 | Understand the execution layer | [Action Proof and the Execution Guardian](#action-proof-and-the-execution-guardian) |
+| Know what is solid vs. prerelease vs. broken | [Live / prerelease / pending](#live--prerelease--pending) |
 
 ### Proof-of-Intent for the AI era
 
@@ -98,8 +102,9 @@ execution-layer tools:
 | `get_execution_status` | Tenant-scoped status and receipt reference for a grant. |
 | `get_source_envelope` | Latest tenant-scoped signed source envelope from an enrolled device. **Contains no message body.** |
 
-`read_message_request` exists only in the local stdio wrapper and is deliberately never
-exposed remotely.
+`read_message_request` exists only in the local wrapper's source and is deliberately never
+exposed remotely. Note the published `@securestamp/mcp-guard@0.1.0` build ships only the first
+six tools above — see [Getting Started §3](developers/GETTING-STARTED.en.md#3-run-it-over-stdio-instead).
 
 ```bash
 curl -sS https://mcp.securestamp.online/mcp \
@@ -157,26 +162,49 @@ Design invariants a developer should know before integrating:
 
 ### npm packages
 
-Six packages are public on npm under **Apache-2.0**.
+Seven packages are public on npm under **Apache-2.0**.
 
-> **Read this before `npm install`.** The `0.3.0-beta.2` line is published under the
-> **`beta-unverified`** dist-tag, not `latest`. That tag is deliberate: it means the code
-> is installable and discoverable, but has **not** cleared the external evidence gate. A
-> plain `npm install` therefore gives you an **older** version for most packages. Ask for
-> the tag explicitly if you want the 0.3 line.
+> **Read this before `npm install`.** `npm install <pkg>` resolves the **`latest`** tag, and for
+> several packages `latest` is deliberately **older** than the newest prerelease. The
+> `0.3.0-beta.2` line sits under **`beta-unverified`**: installable and discoverable, but it has
+> **not** cleared the external evidence gate. Ask for a tag explicitly when you want one.
 
-| Package | What it is | `latest` | `beta-unverified` |
-| --- | --- | --- | --- |
-| [`@securestamp/action-proof-verify`](https://www.npmjs.com/package/@securestamp/action-proof-verify) | Offline, dependency-free verifier for receipts and proof bundles. No network. **Start here.** | `0.3.0-beta.1` | `0.3.0-beta.2` |
-| [`@securestamp/action-registry`](https://www.npmjs.com/package/@securestamp/action-registry) | Dependency-free declarative registry of operations. Consumers derive catalogs from it. | `0.3.0-beta.1` | `0.3.0-beta.2` |
-| [`@securestamp/action-proof`](https://www.npmjs.com/package/@securestamp/action-proof) | Protocol primitives: source envelopes, canonical effects, grants, bundles, signing. | `0.2.0-beta.1` | `0.3.0-beta.2` |
-| [`@securestamp/execution-guardian`](https://www.npmjs.com/package/@securestamp/execution-guardian) | The customer-controlled execution daemon. Holds *your* provider credentials. | `0.2.0-beta.2` | `0.3.0-beta.2` |
-| [`@securestamp/execution-guardian-mcp`](https://www.npmjs.com/package/@securestamp/execution-guardian-mcp) | Credential-free stdio MCP bridge to your Guardian, over a Unix socket only. | `0.2.0-beta.1` | `0.3.0-beta.2` |
-| [`@securestamp/mcp-guard`](https://www.npmjs.com/package/@securestamp/mcp-guard) | Local stdio wrapper for hosts that only speak stdio. | `0.1.0` | — |
+| Package | What it is | `latest` | `beta` | `beta-unverified` |
+| --- | --- | --- | --- | --- |
+| [`@securestamp/cli`](https://www.npmjs.com/package/@securestamp/cli) | Terminal trust checks — `ss check`, `ss registry`, `ss status`. **Stable.** | `1.0.0` | — | — |
+| [`@securestamp/mcp-guard`](https://www.npmjs.com/package/@securestamp/mcp-guard) | Local stdio wrapper for hosts that only speak stdio. | `0.1.0` | — | — |
+| [`@securestamp/action-proof-verify`](https://www.npmjs.com/package/@securestamp/action-proof-verify) | Offline, dependency-free verifier for receipts and proof bundles. No network. **Start here.** | `0.3.0-beta.1` | — | `0.3.0-beta.2` |
+| [`@securestamp/action-registry`](https://www.npmjs.com/package/@securestamp/action-registry) | Dependency-free declarative registry of operations. | `0.3.0-beta.1` | — | `0.3.0-beta.2` |
+| [`@securestamp/action-proof`](https://www.npmjs.com/package/@securestamp/action-proof) | Protocol primitives: source envelopes, canonical effects, grants, bundles, signing. | `0.2.0-beta.1` | `0.2.0-beta.1` | `0.3.0-beta.2` |
+| [`@securestamp/execution-guardian`](https://www.npmjs.com/package/@securestamp/execution-guardian) | The customer-controlled execution daemon. Holds *your* provider credentials. | `0.2.0-beta.2` | `0.2.0-beta.2` | `0.3.0-beta.2` |
+| [`@securestamp/execution-guardian-mcp`](https://www.npmjs.com/package/@securestamp/execution-guardian-mcp) | Credential-free stdio MCP bridge to your Guardian, over a Unix socket only. | `0.2.0-beta.1` | `0.2.0-beta.1` | `0.3.0-beta.2` |
+
+Only three packages carry a `beta` tag, and on those it currently points at the same version as
+`latest`. `@securestamp/cli` and `@securestamp/mcp-guard` have `latest` only.
 
 The verifier and the registry are published **ahead of** what they verify and what consumes
 them, so a released verifier accepts a new bundle version before anything emits one. That is
-why their `latest` is further along than the emitter's.
+why their `latest` runs ahead of the emitter's.
+
+**No published version carries an npm provenance attestation.** Verify a tarball by its
+integrity hash and its contents, not by assuming a signed build chain.
+
+### The CLI
+
+```bash
+npm install -g @securestamp/cli
+ss check securestamp.org --json
+```
+
+`ss check` needs **no API key** and works against the public trust API. `ss status` and quota
+reporting need a key (`ss login ss_live_…` or `ss_test_…`, stored `0600` under
+`~/.securestamp/config.json`; `SS_API_KEY` also works).
+
+> **Two defects in `1.0.0`, verified 2026-09-06.** The shipped README says
+> `ss login sk_live_xxxx`; the binary actually requires the `ss_live_` / `ss_test_` prefixes.
+> And `ss registry` calls a path that exists on `.org` but not on `.online`, so it returns
+> `HTTP 404` with the default base URL. Until a release fixes it, point the CLI at `.org`:
+> `SS_API_BASE=https://securestamp.org ss registry <domain>` — verified working.
 
 ### SSFML — on-device recognition
 
@@ -196,7 +224,11 @@ Two versions travel together and mean different things:
 | | Where it lives | Live today | Changes when |
 | --- | --- | --- | --- |
 | **Engine version** (`ssfmlVersion`) | compiled into the plugin bundle | `2.5.0` | the plugin itself ships |
-| **Knowledge-pack version** (`ssfmlRulesVersion`) | the active signed pack | served from the `stable` channel | auto-updates in the background |
+| **Knowledge-pack version** (`ssfmlRulesVersion`) | the active signed pack | `stable` channel, 100 % rollout | auto-updates in the background |
+
+The live pack manifest declares `minPluginVersion: 0.7.0`, so a plugin older than that never
+receives an update. Current plugin builds in the source tree are Gmail `0.8.2`,
+Outlook/M365 `1.10.2` and Safari `1.1.2`.
 
 The pack channel is **data-only and signed**: a pack manifest carries an ES256 signature over
 a SHA-256 of the artifact, the public key is pinned in the plugin, and a stable build rejects
@@ -204,6 +236,12 @@ an unsigned or invalid pack and falls back to the bundled data. A pack may only 
 phrases to signal IDs the bundled engine already knows, within bounded weight limits — it can
 never introduce a rule, an operator, or a category, and **it can never lower a verdict below
 what the bundled engine would have produced.**
+
+The bounds are numbers in the code, not intentions: at most 512 entries per grammar table and
+1 024 across all of them, 512 cues per pack and 2 048 cue states in total, 256 predicate terms,
+and 200 characters per copy override. The signature is ES256 (ECDSA P-256 / SHA-256) over a
+canonical manifest payload that contains the artifact's own SHA-256, checked against a public
+key pinned in the plugin.
 
 SSFML classification is an **input** to a proposed action. It is not authority: it cannot
 elevate provenance, and Action Proof and the Guardian still enforce the registered operation,
@@ -260,25 +298,58 @@ The Action Proof execution-layer contract is published with the packages themsel
 READMEs of `@securestamp/action-proof` and `@securestamp/action-proof-verify` on npm, and
 the docs at [securestamp.org/en/docs/action-proof](https://securestamp.org/en/docs/action-proof).
 
-### What is live, and what is not
+### Live / prerelease / pending
 
-**Live and externally checkable (2026-09-06):** the MCP Guard production endpoint, its
-nine-tool catalog and `2025-11-25` protocol version · all three auth modes, with OAuth
-protected-resource metadata served · canonical Action Receipts with public verification ·
-six Apache-2.0 packages on the public npm registry · the SSFML signed knowledge-pack
-channel on `stable` · Telegram and WhatsApp Channel-Trust via configured channel
-integrations · append-only Merkle transparency logs (Key Transparency, channel-trust).
+Each row below was checked against the deployed service or the public registry on
+**2026-09-06**. Nothing here is asserted from a document.
 
-**Published but explicitly unverified:** the `0.3.0-beta.2` line sits under the
-`beta-unverified` dist-tag and a `server.json` that says so. Discoverable is not certified;
-the verified beta still requires the external evidence gate.
+**Live — stable, externally checkable**
 
-**Roadmap / not claimed:** verified conformance with any *named* third-party MCP host or
-client through its own GUI — protocol compatibility is verified against the official
-`@modelcontextprotocol/sdk`, which is the library those hosts use, but we do not claim a
-literal in-app smoke we have not run · submission to, or listing in, any MCP registry or
-marketplace · certification of the full grant + Guardian + human-approval chain · a
-permissioned distributed ledger (Fabric) as a multi-operator substrate.
+| Thing | Evidence |
+| --- | --- |
+| MCP Guard endpoint | `/healthz` `200`, `/readyz` `200`, `/version` `200` |
+| MCP protocol version | `2025-11-25`, reported by `/version` |
+| Nine-tool remote catalog | `/.well-known/securestamp-mcp.json` |
+| Auth required, fail-closed | `/mcp` returns `401` on GET and POST without a token |
+| OAuth protected-resource metadata | `/.well-known/oauth-protected-resource` `200` |
+| Public receipt lookup | `/api/action/receipts/<id>` — `404` on an unknown id |
+| `@securestamp/cli` | `1.0.0` on `latest`; `ss check` verified against production |
+| `@securestamp/mcp-guard` | `0.1.0` on `latest` |
+| SSFML signed pack channel | `stable`, engine `2.5.0`, rollout 100 %, signature present |
+| SSFML engine + tests | `MODEL_VERSION = '2.5.0'`; 1 828 tests across 82 files passing |
+| Credential-free Guardian bridge | published tarball has 2 deps, no provider SDK, no HTTP listener |
+
+**Prerelease — published, explicitly unverified**
+
+The `0.3.0-beta.2` line sits under the `beta-unverified` dist-tag and a `server.json` that says
+so. Discoverable is not certified; the verified beta still requires the external evidence gate.
+For `@securestamp/action-proof`, `execution-guardian` and `execution-guardian-mcp`, `latest`
+and `beta` both still point at the 0.2 line.
+
+**Pending — known gaps and defects**
+
+- `@securestamp/action-proof-verify` declares a `bin`, but the published `dist/cli.js` has no
+  shebang in **both** published versions, so the executable does not run. The library API works;
+  use it instead. Fixing this needs a release.
+- `@securestamp/cli@1.0.0` documents the wrong API-key prefix and its `ss registry` command
+  targets a host where the route does not exist. Both need a release.
+- `@securestamp/cli` and `@securestamp/action-proof-verify` declare Apache-2.0 but ship no
+  `LICENSE` file in the tarball.
+- `@securestamp/action-proof` and `@securestamp/action-proof-verify` both declare a bin named
+  `action-proof-verify`; installing both globally collides.
+- The published `@securestamp/mcp-guard@0.1.0` build exposes only six tools; the execution-layer
+  tools and the local reader exist in source but are not in that release.
+- Node-operator materials are **not in this repository**. There is no `node/` directory here,
+  so any instruction to `cd securestamp-protocol/node` cannot work.
+
+**Not claimed**
+
+Verified conformance with any *named* third-party MCP host or client through its own GUI —
+protocol compatibility is verified against the official `@modelcontextprotocol/sdk`, which is
+the library those hosts use, but we do not claim a literal in-app smoke we have not run ·
+submission to, or listing in, any MCP registry or marketplace · npm provenance attestations ·
+certification of the full grant + Guardian + human-approval chain · a permissioned distributed
+ledger (Fabric) as a multi-operator substrate.
 
 *We do not assert compatibility we have not verified end-to-end.*
 
@@ -318,10 +389,12 @@ Technical collaboration: Ivan.
 | --- | --- |
 | Entender la idea en cinco minutos | esta página |
 | **Conectar un agente, copiloto o host MCP** | **[Guía de inicio](developers/GETTING-STARTED.es.md)** |
+| **Chequear un dominio desde la terminal ya mismo** | [El CLI](#el-cli) — sin API key |
 | Instalar los paquetes | [Paquetes npm](#paquetes-npm) — *leé primero la nota de dist-tags* |
 | Verificar un receipt o un proof bundle offline | [Guía de inicio §5](developers/GETTING-STARTED.es.md#5-verificar-sin-cuenta) |
 | Leer la spec normativa | [Protocolo v0.2](protocol/SECURESTAMP-PROTOCOL-v0.2.es.md) |
 | Entender la capa de ejecución | [Action Proof y el Execution Guardian](#action-proof-y-el-execution-guardian) |
+| Saber qué es sólido, qué prerelease y qué está roto | [Live / prerelease / pendiente](#live--prerelease--pendiente) |
 
 ### Proof-of-Intent para la era de la IA
 
@@ -398,8 +471,10 @@ capa de ejecución:
 | `get_execution_status` | Estado y referencia de receipt de un grant, scopeado al tenant. |
 | `get_source_envelope` | Último source envelope firmado del tenant desde un dispositivo enrolado. **No contiene el cuerpo del mensaje.** |
 
-`read_message_request` existe sólo en el wrapper stdio local y deliberadamente nunca se
-expone de forma remota.
+`read_message_request` existe sólo en el código del wrapper local y deliberadamente nunca se
+expone de forma remota. Ojo: la build publicada de `@securestamp/mcp-guard@0.1.0` incluye
+únicamente las primeras seis tools de arriba — ver
+[Guía de inicio §3](developers/GETTING-STARTED.es.md#3-correrlo-por-stdio).
 
 ```bash
 curl -sS https://mcp.securestamp.online/mcp \
@@ -457,26 +532,49 @@ Invariantes de diseño que conviene conocer antes de integrar:
 
 ### Paquetes npm
 
-Seis paquetes públicos en npm bajo **Apache-2.0**.
+Siete paquetes públicos en npm bajo **Apache-2.0**.
 
-> **Leé esto antes de `npm install`.** La línea `0.3.0-beta.2` está publicada bajo el
-> dist-tag **`beta-unverified`**, no bajo `latest`. Ese tag es deliberado: significa que el
-> código es instalable y descubrible, pero **no** pasó el gate de evidencia externa. Un
-> `npm install` pelado te da entonces una versión **más vieja** en la mayoría de los
-> paquetes. Pedí el tag explícitamente si querés la línea 0.3.
+> **Leé esto antes de `npm install`.** `npm install <pkg>` resuelve el tag **`latest`**, y en
+> varios paquetes `latest` es deliberadamente **más viejo** que el prerelease más nuevo. La
+> línea `0.3.0-beta.2` está bajo **`beta-unverified`**: instalable y descubrible, pero **no**
+> pasó el gate de evidencia externa. Pedí el tag explícitamente cuando quieras uno.
 
-| Paquete | Qué es | `latest` | `beta-unverified` |
-| --- | --- | --- | --- |
-| [`@securestamp/action-proof-verify`](https://www.npmjs.com/package/@securestamp/action-proof-verify) | Verificador offline y sin dependencias de receipts y proof bundles. Sin red. **Empezá acá.** | `0.3.0-beta.1` | `0.3.0-beta.2` |
-| [`@securestamp/action-registry`](https://www.npmjs.com/package/@securestamp/action-registry) | Registro declarativo de operaciones, sin dependencias. Los consumidores derivan su catálogo de acá. | `0.3.0-beta.1` | `0.3.0-beta.2` |
-| [`@securestamp/action-proof`](https://www.npmjs.com/package/@securestamp/action-proof) | Primitivas del protocolo: source envelopes, efectos canónicos, grants, bundles, firma. | `0.2.0-beta.1` | `0.3.0-beta.2` |
-| [`@securestamp/execution-guardian`](https://www.npmjs.com/package/@securestamp/execution-guardian) | El daemon de ejecución controlado por el cliente. Tiene *tus* credenciales de proveedor. | `0.2.0-beta.2` | `0.3.0-beta.2` |
-| [`@securestamp/execution-guardian-mcp`](https://www.npmjs.com/package/@securestamp/execution-guardian-mcp) | Bridge MCP stdio credential-free hacia tu Guardian, sólo por Unix socket. | `0.2.0-beta.1` | `0.3.0-beta.2` |
-| [`@securestamp/mcp-guard`](https://www.npmjs.com/package/@securestamp/mcp-guard) | Wrapper stdio local para hosts que sólo hablan stdio. | `0.1.0` | — |
+| Paquete | Qué es | `latest` | `beta` | `beta-unverified` |
+| --- | --- | --- | --- | --- |
+| [`@securestamp/cli`](https://www.npmjs.com/package/@securestamp/cli) | Chequeos de confianza desde la terminal — `ss check`, `ss registry`, `ss status`. **Estable.** | `1.0.0` | — | — |
+| [`@securestamp/mcp-guard`](https://www.npmjs.com/package/@securestamp/mcp-guard) | Wrapper stdio local para hosts que sólo hablan stdio. | `0.1.0` | — | — |
+| [`@securestamp/action-proof-verify`](https://www.npmjs.com/package/@securestamp/action-proof-verify) | Verificador offline y sin dependencias de receipts y proof bundles. Sin red. **Empezá acá.** | `0.3.0-beta.1` | — | `0.3.0-beta.2` |
+| [`@securestamp/action-registry`](https://www.npmjs.com/package/@securestamp/action-registry) | Registro declarativo de operaciones, sin dependencias. | `0.3.0-beta.1` | — | `0.3.0-beta.2` |
+| [`@securestamp/action-proof`](https://www.npmjs.com/package/@securestamp/action-proof) | Primitivas del protocolo: source envelopes, efectos canónicos, grants, bundles, firma. | `0.2.0-beta.1` | `0.2.0-beta.1` | `0.3.0-beta.2` |
+| [`@securestamp/execution-guardian`](https://www.npmjs.com/package/@securestamp/execution-guardian) | El daemon de ejecución controlado por el cliente. Tiene *tus* credenciales de proveedor. | `0.2.0-beta.2` | `0.2.0-beta.2` | `0.3.0-beta.2` |
+| [`@securestamp/execution-guardian-mcp`](https://www.npmjs.com/package/@securestamp/execution-guardian-mcp) | Bridge MCP stdio credential-free hacia tu Guardian, sólo por Unix socket. | `0.2.0-beta.1` | `0.2.0-beta.1` | `0.3.0-beta.2` |
 
-El verificador y el registry se publican **antes** de lo que verifican y de lo que los
-consume, así que un verificador ya liberado acepta una versión nueva de bundle antes de que
-alguien la emita. Por eso su `latest` va más adelante que el del emisor.
+Sólo tres paquetes tienen tag `beta`, y en ésos hoy apunta a la misma versión que `latest`.
+`@securestamp/cli` y `@securestamp/mcp-guard` tienen únicamente `latest`.
+
+El verificador y el registry se publican **antes** de lo que verifican y de lo que los consume,
+así que un verificador ya liberado acepta una versión nueva de bundle antes de que alguien la
+emita. Por eso su `latest` va más adelante que el del emisor.
+
+**Ninguna versión publicada lleva attestation de provenance de npm.** Verificá un tarball por su
+hash de integridad y su contenido, no asumiendo una cadena de build firmada.
+
+### El CLI
+
+```bash
+npm install -g @securestamp/cli
+ss check securestamp.org --json
+```
+
+`ss check` **no necesita API key** y funciona contra la API pública de trust. `ss status` y el
+reporte de cuota sí necesitan clave (`ss login ss_live_…` o `ss_test_…`, guardada con permisos
+`0600` en `~/.securestamp/config.json`; `SS_API_KEY` también sirve).
+
+> **Dos defectos en `1.0.0`, verificados el 2026-09-06.** El README publicado dice
+> `ss login sk_live_xxxx`; el binario en realidad exige los prefijos `ss_live_` / `ss_test_`.
+> Y `ss registry` llama a una ruta que existe en `.org` pero no en `.online`, así que devuelve
+> `HTTP 404` con la base por defecto. Hasta que un release lo corrija, apuntá el CLI a `.org`:
+> `SS_API_BASE=https://securestamp.org ss registry <dominio>` — verificado funcionando.
 
 ### SSFML — reconocimiento on-device
 
@@ -496,7 +594,11 @@ Viajan dos versiones y significan cosas distintas:
 | | Dónde vive | Hoy en vivo | Cambia cuando |
 | --- | --- | --- | --- |
 | **Versión del motor** (`ssfmlVersion`) | compilada en el bundle del plugin | `2.5.0` | se publica el plugin |
-| **Versión del knowledge-pack** (`ssfmlRulesVersion`) | el pack activo | servida desde el canal `stable` | auto-actualiza en background |
+| **Versión del knowledge-pack** (`ssfmlRulesVersion`) | el pack activo | canal `stable`, rollout 100 % | auto-actualiza en background |
+
+El manifiesto vivo del pack declara `minPluginVersion: 0.7.0`, así que un plugin más viejo que
+eso nunca recibe una actualización. Las builds actuales en el árbol de fuentes son Gmail
+`0.8.2`, Outlook/M365 `1.10.2` y Safari `1.1.2`.
 
 El canal de packs es **sólo datos y firmado**: el manifiesto lleva una firma ES256 sobre un
 SHA-256 del artefacto, la clave pública está pinneada en el plugin, y un build estable rechaza
@@ -504,6 +606,12 @@ un pack sin firma o inválido y cae al dato empaquetado. Un pack sólo puede agr
 literales a signal IDs que el motor empaquetado ya conoce, dentro de límites acotados de peso
 — nunca puede introducir una regla, un operador ni una categoría, y **nunca puede bajar un
 veredicto por debajo de lo que habría producido el motor empaquetado.**
+
+Los límites son números en el código, no intenciones: como máximo 512 entradas por tabla
+gramatical y 1 024 entre todas, 512 cues por pack y 2 048 estados de cue en total, 256 términos
+de predicado, y 200 caracteres por override de copy. La firma es ES256 (ECDSA P-256 / SHA-256)
+sobre un payload canónico de manifiesto que contiene el propio SHA-256 del artefacto, contra una
+clave pública pinneada en el plugin.
 
 La clasificación de SSFML es una **entrada** a la acción propuesta. No es autoridad: no puede
 elevar la procedencia, y Action Proof y el Guardian siguen exigiendo por su cuenta la
@@ -560,26 +668,58 @@ El contrato de la capa de ejecución de Action Proof se publica con los paquetes
 READMEs de `@securestamp/action-proof` y `@securestamp/action-proof-verify` en npm, y la
 documentación en [securestamp.org/es/docs/action-proof](https://securestamp.org/es/docs/action-proof).
 
-### Qué está live, y qué no
+### Live / prerelease / pendiente
 
-**Live y comprobable desde afuera (2026-09-06):** el endpoint de producción de MCP Guard, su
-catálogo de nueve tools y la versión de protocolo `2025-11-25` · los tres modos de auth, con
-metadata OAuth de protected-resource servida · Action Receipts canónicos con verificación
-pública · seis paquetes Apache-2.0 en el registro público de npm · el canal firmado de
-knowledge-packs de SSFML en `stable` · Channel-Trust de Telegram y WhatsApp mediante
-integraciones de canal configuradas · logs de transparencia append-only Merkle (Key
-Transparency, channel-trust).
+Cada fila de abajo se comprobó contra el servicio desplegado o el registro público el
+**2026-09-06**. Nada de esto se afirma a partir de un documento.
 
-**Publicado pero explícitamente no verificado:** la línea `0.3.0-beta.2` está bajo el dist-tag
-`beta-unverified` y un `server.json` que lo declara. Descubrible no es certificado; la beta
-verificada sigue exigiendo el gate de evidencia externa.
+**Live — estable, comprobable desde afuera**
 
-**Roadmap / no reclamado:** conformidad verificada con cualquier host o cliente MCP de
-terceros *nombrado* a través de su propia GUI — la compatibilidad de protocolo está verificada
-contra el `@modelcontextprotocol/sdk` oficial, que es la librería que esos hosts usan, pero no
-afirmamos un smoke literal dentro de la app que no corrimos · envío o listado en cualquier
-registro o marketplace MCP · certificación de la cadena completa grant + Guardian + aprobación
-humana · un ledger distribuido permisionado (Fabric) como sustrato multi-operador.
+| Qué | Evidencia |
+| --- | --- |
+| Endpoint de MCP Guard | `/healthz` `200`, `/readyz` `200`, `/version` `200` |
+| Versión de protocolo MCP | `2025-11-25`, informada por `/version` |
+| Catálogo remoto de nueve tools | `/.well-known/securestamp-mcp.json` |
+| Auth obligatoria, fail-closed | `/mcp` devuelve `401` en GET y POST sin token |
+| Metadata OAuth de protected-resource | `/.well-known/oauth-protected-resource` `200` |
+| Lookup público de receipts | `/api/action/receipts/<id>` — `404` con un id inexistente |
+| `@securestamp/cli` | `1.0.0` en `latest`; `ss check` verificado contra producción |
+| `@securestamp/mcp-guard` | `0.1.0` en `latest` |
+| Canal firmado de packs SSFML | `stable`, motor `2.5.0`, rollout 100 %, firma presente |
+| Motor SSFML + tests | `MODEL_VERSION = '2.5.0'`; 1 828 tests en 82 archivos pasando |
+| Bridge Guardian credential-free | el tarball publicado tiene 2 deps, sin SDK de proveedor ni listener HTTP |
+
+**Prerelease — publicado, explícitamente no verificado**
+
+La línea `0.3.0-beta.2` está bajo el dist-tag `beta-unverified` y un `server.json` que lo
+declara. Descubrible no es certificado; la beta verificada sigue exigiendo el gate de evidencia
+externa. En `@securestamp/action-proof`, `execution-guardian` y `execution-guardian-mcp`,
+`latest` y `beta` siguen apuntando a la línea 0.2.
+
+**Pendiente — huecos y defectos conocidos**
+
+- `@securestamp/action-proof-verify` declara un `bin`, pero el `dist/cli.js` publicado no tiene
+  shebang en **las dos** versiones publicadas, así que el ejecutable no corre. La API de
+  librería sí funciona; usá esa. Corregirlo requiere un release.
+- `@securestamp/cli@1.0.0` documenta el prefijo de API key equivocado y su comando
+  `ss registry` apunta a un host donde la ruta no existe. Ambos requieren un release.
+- `@securestamp/cli` y `@securestamp/action-proof-verify` declaran Apache-2.0 pero no incluyen
+  archivo `LICENSE` en el tarball.
+- `@securestamp/action-proof` y `@securestamp/action-proof-verify` declaran los dos un bin
+  llamado `action-proof-verify`; instalar ambos globalmente colisiona.
+- La build publicada de `@securestamp/mcp-guard@0.1.0` expone sólo seis tools; las de la capa de
+  ejecución y el lector local existen en el código pero no en ese release.
+- El material para operadores de nodo **no está en este repositorio**. Acá no hay directorio
+  `node/`, así que cualquier instrucción de `cd securestamp-protocol/node` no puede funcionar.
+
+**No reclamado**
+
+Conformidad verificada con cualquier host o cliente MCP de terceros *nombrado* a través de su
+propia GUI — la compatibilidad de protocolo está verificada contra el `@modelcontextprotocol/sdk`
+oficial, que es la librería que esos hosts usan, pero no afirmamos un smoke literal dentro de la
+app que no corrimos · envío o listado en cualquier registro o marketplace MCP · attestations de
+provenance en npm · certificación de la cadena completa grant + Guardian + aprobación humana ·
+un ledger distribuido permisionado (Fabric) como sustrato multi-operador.
 
 *No afirmamos compatibilidad que no hayamos verificado end-to-end.*
 

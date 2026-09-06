@@ -19,8 +19,9 @@ Para los conceptos, leé el [README](../README.md) y el
 2. **Nunca mandes el texto crudo del mensaje a una tool remota.** Las tools remotas reciben
    *señales abstractas*. La lectura del cuerpo pasa en el dispositivo (SSFML) o en el wrapper
    stdio local (`read_message_request`), nunca por la red.
-3. **La línea `0.3` en npm está bajo `beta-unverified`, no bajo `latest`.** Ver
-   [§4](#4-instalar-los-paquetes). Un `npm install` pelado te da una versión más vieja a propósito.
+3. **`npm install` resuelve `latest`, que está deliberadamente atrás del prerelease más nuevo**
+   en la línea Action Proof. Ver [§4](#4-instalar-los-paquetes) — y revisá los defectos conocidos
+   en [§8](#8-errores-que-deberías-esperar) antes de construir sobre un binario publicado.
 
 ---
 
@@ -168,45 +169,78 @@ SECURESTAMP_API_KEY=ss_live_... npx -y @securestamp/mcp-guard
 }
 ```
 
-El wrapper stdio lleva una tool que el endpoint remoto deliberadamente **no** expone:
-`read_message_request`, el lector local. Inspecciona el texto del mensaje *dentro de tu
-entorno* y devuelve la estructura de la acción solicitada sin mandarle el cuerpo a
-SecureStamp. No devuelve veredicto — después llamá a `authorize_action` con el resultado
-estructurado.
+**Lo que el `0.1.0` publicado realmente expone son seis tools**, no nueve: `authorize_action`,
+`analyze_message_intent`, `verify_counterparty`, `create_action_challenge`, `get_safe_next_step`
+e `issue_action_receipt`. Verificado abriendo el tarball publicado el 2026-09-06.
 
-El servicio remoto always-on es la superficie principal; el wrapper es el fallback stdio para
-las mismas tools y el mismo backend.
+Las tres tools de la capa de ejecución (`request_execution_grant`, `get_execution_status`,
+`get_source_envelope`) y el lector local `read_message_request` existen en el árbol de fuentes
+pero **no** están en la build publicada. Si las necesitás, usá el endpoint remoto — o, para
+ejecución, el bridge aparte `@securestamp/execution-guardian-mcp`.
+
+El servicio remoto always-on es la superficie principal; el wrapper es el fallback stdio.
 
 ---
 
 ## 4. Instalar los paquetes
 
-Seis paquetes públicos, **Apache-2.0**.
+Siete paquetes públicos, **Apache-2.0**.
 
-> Nota: ninguna de las versiones publicadas hoy lleva attestation de provenance de npm.
-> Verificá un tarball por su hash de integridad y su contenido, no asumiendo una cadena de build firmada.
-
-> **El dist-tag importa.** `0.3.0-beta.2` está publicado bajo **`beta-unverified`** — el código
-> es instalable y descubrible pero **no** pasó el gate de evidencia externa. `latest` sigue
-> apuntando a propósito a una versión más vieja en la mayoría de los paquetes.
+> **`npm install` resuelve `latest`, y `latest` suele estar atrás.** En tres paquetes el
+> prerelease más nuevo está bajo **`beta-unverified`**, que significa instalable y descubrible
+> pero **sin** pasar el gate de evidencia externa. Elegí el tag a propósito.
 
 ```bash
-# lo que te da npm por defecto
-npm install @securestamp/action-proof            # → 0.2.0-beta.1
-npm install @securestamp/action-proof-verify     # → 0.3.0-beta.1
+# estable, sin tag
+npm install -g @securestamp/cli                          # → 1.0.0
+npm install @securestamp/mcp-guard                        # → 0.1.0
 
-# la línea 0.3, explícita, sabiendo lo que significa el tag
-npm install @securestamp/action-proof@beta-unverified   # → 0.3.0-beta.2
+# lo que te da `latest` en la línea Action Proof
+npm install @securestamp/action-proof                     # → 0.2.0-beta.1  (¡no 0.3!)
+npm install @securestamp/action-proof-verify              # → 0.3.0-beta.1
+
+# hoy igual que latest, pero fijado al canal beta
+npm install @securestamp/action-proof@beta                # → 0.2.0-beta.1
+
+# la línea 0.3, explícita, sabiendo lo que el tag te retiene
+npm install @securestamp/action-proof@beta-unverified     # → 0.3.0-beta.2
 ```
 
-| Paquete | Deps | Node | `latest` | `beta-unverified` |
-| --- | --- | --- | --- | --- |
-| `@securestamp/action-proof-verify` | 0 | ≥20 | `0.3.0-beta.1` | `0.3.0-beta.2` |
-| `@securestamp/action-registry` | 0 | ≥20 | `0.3.0-beta.1` | `0.3.0-beta.2` |
-| `@securestamp/action-proof` | 1 | ≥20 | `0.2.0-beta.1` | `0.3.0-beta.2` |
-| `@securestamp/execution-guardian` | 9 | ≥22.5 | `0.2.0-beta.2` | `0.3.0-beta.2` |
-| `@securestamp/execution-guardian-mcp` | 3 | ≥22.5 | `0.2.0-beta.1` | `0.3.0-beta.2` |
-| `@securestamp/mcp-guard` | 0 | ≥20 | `0.1.0` | — |
+| Paquete | Deps | Node | `latest` | `beta` | `beta-unverified` |
+| --- | --- | --- | --- | --- | --- |
+| `@securestamp/cli` | 3 | ≥22.22.2 | `1.0.0` | — | — |
+| `@securestamp/mcp-guard` | 0 | ≥20 | `0.1.0` | — | — |
+| `@securestamp/action-proof-verify` | 0 | ≥20 | `0.3.0-beta.1` | — | `0.3.0-beta.2` |
+| `@securestamp/action-registry` | 0 | ≥20 | `0.3.0-beta.1` | — | `0.3.0-beta.2` |
+| `@securestamp/action-proof` | 1 | ≥20 | `0.2.0-beta.1` | `0.2.0-beta.1` | `0.3.0-beta.2` |
+| `@securestamp/execution-guardian` | 9 | ≥22.5 | `0.2.0-beta.2` | `0.2.0-beta.2` | `0.3.0-beta.2` |
+| `@securestamp/execution-guardian-mcp` | 3 | ≥22.5 | `0.2.0-beta.1` | `0.2.0-beta.1` | `0.3.0-beta.2` |
+
+Un `—` significa que el tag no existe en ese paquete, no que apunte a otro lado. Ninguna versión
+publicada lleva attestation de provenance de npm, y `@securestamp/cli` y
+`@securestamp/action-proof-verify` no incluyen archivo `LICENSE` dentro de sus tarballs pese a
+declarar Apache-2.0.
+
+### El CLI
+
+```bash
+npm install -g @securestamp/cli
+ss check securestamp.org --json      # sin API key
+ss check alguien@ejemplo.com
+ss status                            # necesita clave
+```
+
+`ss check` corre contra la API pública de trust y devuelve score, estado, nivel, señales
+SPF/DKIM/DMARC y razones. Las claves se guardan con permisos `0600` en
+`~/.securestamp/config.json`; `SS_API_KEY` y `SS_API_BASE` pisan el archivo.
+
+> **Dos defectos en el `1.0.0` publicado, verificados el 2026-09-06.** Su propio README dice
+> `ss login sk_live_xxxx`, pero el binario exige **`ss_live_`** o **`ss_test_`**. Y
+> `ss registry` pide una ruta que existe en `.org` pero no en la base `.online` por defecto, así
+> que responde `HTTP 404`. Lo que funciona hoy:
+> ```bash
+> SS_API_BASE=https://securestamp.org ss registry securestamp.org --json
+> ```
 
 **Empezá por el verificador.** Es la puerta de entrada del ecosistema, no un accesorio: sin
 acceso a red, sin dependencias, y se publica *antes* de lo que verifica, así que un
@@ -229,6 +263,28 @@ Para verificación criptográfica de verdad, hacela **offline**.
 nunca confía en un SDK de proveedor. Vos aportás los trust anchors; él comprueba localmente
 cada firma, digest, audience, grant de un solo uso, binding de política local e inclusión en el
 log de transparencia.
+
+Usá la **API de librería**. El paquete declara un binario `action-proof-verify`, pero el
+`dist/cli.js` publicado no tiene shebang en ninguna de las dos versiones liberadas, así que el
+ejecutable no corre — corregirlo requiere un release.
+
+```js
+import { verifyActionProofBundleOffline, jcs } from '@securestamp/action-proof-verify'
+
+// JSON canónico RFC 8785 — claves ordenadas, bytes deterministas para hashear
+jcs({ b: 1, a: [2, { d: 4, c: 3 }] })  // {"a":[2,{"c":3,"d":4}],"b":1}
+
+// LANZA excepción ante un bundle malformado en vez de devolver { ok: false } — capturala.
+try {
+  const result = await verifyActionProofBundleOffline({ bundle, trustAnchors })
+  console.log(result)
+} catch (err) {
+  console.error('rechazado:', err.message)   // p. ej. INVALID_ACTION_PROOF_BUNDLE
+}
+```
+
+Fallar cerrado es el punto: un bundle imparseable levanta excepción en vez de resolver a un
+"no" blando.
 
 Acepta `ActionReceiptV2` y `ActionReceiptV3`, y `ActionProofBundleV1` y `ActionProofBundleV2`.
 Informa qué pudo y qué no pudo establecer — `policyEvidence` como `verified` o
@@ -283,7 +339,7 @@ acciones fuera de banda en el proveedor.** No uses credenciales que no controlá
 
 ---
 
-## 7. Lo que nunca sale del dispositivo
+## 7. Límites de privacidad — qué se envía y qué nunca sale del dispositivo
 
 **SSFML** (SecureStamp ML) es la capa de reconocimiento on-device dentro de los plugins de
 email y la extensión de navegador. Lee el cuerpo **localmente** — tokenización, extracción de
@@ -292,6 +348,25 @@ señales/reglas, y detección de instrucciones candidatas (referencias IBAN/CBU/
 
 **El cuerpo nunca sale del dispositivo.** Lo que llega a la API son señales abstractas, intents
 y metadata de versión.
+
+En concreto, por superficie:
+
+| Superficie | Sale del dispositivo | Nunca sale |
+| --- | --- | --- |
+| SSFML en un plugin | señales abstractas, intents, ids de regla, flags de adjunto/QR, versiones de motor y pack | cuerpo del mensaje, texto del asunto, contenido de adjuntos |
+| `analyze_message_intent` | un objeto `signals` que construís vos | texto crudo del mensaje |
+| `authorize_action` | tipo de acción, contraparte, canal, monto/moneda, strings opacos de evidencia | el mensaje que lo motivó |
+| `get_source_envelope` | hashes opacos `ref_v1:` / `acct_v1:`, digest de contenido, id de clave de dispositivo | identificadores de casilla, números de cuenta, cuerpo |
+| `read_message_request` (wrapper stdio) | nada — corre localmente | todo queda en tu proceso |
+| `ss check` | el dominio o email que pasás | nada más |
+
+Los localizadores de origen y cuenta se hashean a `ref_v1:<sha256>` y `acct_v1:<sha256>`
+**antes** de firmar; el verificador rechaza de plano identificadores de casilla y números de
+cuenta crudos. Los source envelopes además rechazan recursivamente campos con forma de cuerpo
+crudo, así que un campo futuro no puede colar un cuerpo dentro de un objeto firmado por accidente.
+
+Las instrucciones monetarias en texto plano no deben mandarse a tools remotas; el matching
+monetario se fingerprintea del lado del servidor.
 
 Viajan dos versiones: el **motor** (`2.5.0`, compilado en el plugin, cambia sólo cuando se
 publica el plugin) y el **knowledge pack** (auto-actualiza desde el canal `stable`).
@@ -326,6 +401,10 @@ tablas gramaticales sin él sería inventar la medición misma que el canal exis
 | `LOCAL_POLICY_REVIEW_REQUIRED` / `LOCAL_POLICY_EXPIRED` | Tu política local firmada está vencida o expirada. La ejecución se detiene antes del acceso al proveedor. |
 | `RESOURCE_BINDING_MISMATCH` | Se sustituyó un recurso, tenant, destino, cuenta, región, rol o manifiesto de tool después de autorizado el efecto. |
 | `BUNDLE_VERSION_MISMATCH` | Un `ActionProofBundleV2` se apareó con una versión de receipt que no corresponde. |
+| `INVALID_ACTION_PROOF_BUNDLE` | El verificador offline **lanza** esto ante un bundle malformado. Capturalo; no devuelve `{ ok: false }`. |
+| `action-proof-verify: import: command not found` | El binario publicado del verificador no tiene shebang. Usá la API de librería ([§5](#5-verificar-sin-cuenta)). |
+| `ss registry` → `HTTP 404` | Defecto del CLI publicado: apunta a `.online`, donde esa ruta no existe. Usá `SS_API_BASE=https://securestamp.org`. |
+| `Invalid API key format` en `ss login` | Las claves empiezan con `ss_live_` o `ss_test_`, no con el `sk_live_` que muestra el README del CLI publicado. |
 
 Cada llamada de respaldo es tenant-scoped, rate-limited y auditada. Las fallas de auth, los
 requests inválidos, los rate limits, `initialize`/`tools/list` y los health checks nunca se
