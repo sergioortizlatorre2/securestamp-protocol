@@ -235,13 +235,20 @@ ss status                            # needs a key
 signals and reasons. Keys are stored `0600` at `~/.securestamp/config.json`; `SS_API_KEY` and
 `SS_API_BASE` override the file.
 
-> **Two defects in the published `1.0.0`, verified 2026-09-06.** Its own README says
-> `ss login sk_live_xxxx`, but the binary requires **`ss_live_`** or **`ss_test_`**. And
-> `ss registry` requests a path that exists on `.org` but not on the default `.online` base, so
-> it answers `HTTP 404`. Working today:
+> **The published `1.0.0` is substantially broken — verified 2026-09-06 by running it.**
+> `ss check` without `--json` and `ss batch` both crash with a `TypeError` (they read a trust
+> field the API does not return); `ss registry` answers `HTTP 404` (its route lives on `.org`,
+> not the default `.online`); the README documents `sk_live_` while the binary requires
+> `ss_live_`/`ss_test_`; and `engines` demands Node `>=22.22.2`, which blocks Node 20 LTS.
+> What still works on `1.0.0`: `ss check --json`, `ss status`, `ss login`, `ss logout`.
+>
 > ```bash
+> # workarounds on 1.0.0
+> ss check securestamp.org --json
 > SS_API_BASE=https://securestamp.org ss registry securestamp.org --json
 > ```
+>
+> A fixed `1.0.1` is built and verified but **not yet published**.
 
 **Start with the verifier.** It is the entry point of the ecosystem, not an accessory: no
 network access, no dependencies, and it is published *ahead of* what it verifies, so a

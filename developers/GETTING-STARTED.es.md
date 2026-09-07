@@ -234,13 +234,20 @@ ss status                            # necesita clave
 SPF/DKIM/DMARC y razones. Las claves se guardan con permisos `0600` en
 `~/.securestamp/config.json`; `SS_API_KEY` y `SS_API_BASE` pisan el archivo.
 
-> **Dos defectos en el `1.0.0` publicado, verificados el 2026-09-06.** Su propio README dice
-> `ss login sk_live_xxxx`, pero el binario exige **`ss_live_`** o **`ss_test_`**. Y
-> `ss registry` pide una ruta que existe en `.org` pero no en la base `.online` por defecto, así
-> que responde `HTTP 404`. Lo que funciona hoy:
+> **El `1.0.0` publicado está bastante roto — verificado el 2026-09-06 ejecutándolo.**
+> `ss check` sin `--json` y `ss batch` crashean con un `TypeError` (leen un campo de confianza
+> que la API no devuelve); `ss registry` responde `HTTP 404` (su ruta vive en `.org`, no en la
+> base `.online` por defecto); el README documenta `sk_live_` cuando el binario exige
+> `ss_live_`/`ss_test_`; y `engines` pide Node `>=22.22.2`, que deja afuera a Node 20 LTS.
+> Lo que sí funciona en `1.0.0`: `ss check --json`, `ss status`, `ss login`, `ss logout`.
+>
 > ```bash
+> # workarounds en 1.0.0
+> ss check securestamp.org --json
 > SS_API_BASE=https://securestamp.org ss registry securestamp.org --json
 > ```
+>
+> Hay un `1.0.1` corregido y verificado, pero **todavía sin publicar**.
 
 **Empezá por el verificador.** Es la puerta de entrada del ecosistema, no un accesorio: sin
 acceso a red, sin dependencias, y se publica *antes* de lo que verifica, así que un

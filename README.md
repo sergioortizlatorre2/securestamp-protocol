@@ -328,15 +328,23 @@ and `beta` both still point at the 0.2 line.
 
 **Pending — known gaps and defects**
 
+Fixes for the first three are **built and verified locally but not yet published**, so
+everything below still describes what npm serves today.
+
 - `@securestamp/action-proof-verify` declares a `bin`, but the published `dist/cli.js` has no
   shebang in **both** published versions, so the executable does not run. The library API works;
-  use it instead. Fixing this needs a release.
-- `@securestamp/cli@1.0.0` documents the wrong API-key prefix and its `ss registry` command
-  targets a host where the route does not exist. Both need a release.
+  use it instead. *(Fixed and verified in an unreleased `0.3.0-beta.3`.)*
+- **`@securestamp/cli@1.0.0` has three of its six commands broken.** `ss check` without `--json`
+  and `ss batch` both crash on an undefined trust state — the response field they read does not
+  exist — and `ss registry` targets a host where the route does not exist. Its README also
+  documents the wrong API-key prefix, and its `engines` floor of `>=22.22.2` locks out Node 20
+  LTS under `engine-strict`. *(All fixed and verified in an unreleased `1.0.1`.)*
 - `@securestamp/cli` and `@securestamp/action-proof-verify` declare Apache-2.0 but ship no
-  `LICENSE` file in the tarball.
+  `LICENSE` file in the tarball. *(Both now carry it in the unreleased builds.)*
 - `@securestamp/action-proof` and `@securestamp/action-proof-verify` both declare a bin named
-  `action-proof-verify`; installing both globally collides.
+  `action-proof-verify`. Installing both makes **the emitter win**, so you can run the emitter's
+  CLI believing you ran the independent verifier. The verifier keeps the name; the emitter's next
+  release renames its own to `action-proof`.
 - The published `@securestamp/mcp-guard@0.1.0` build exposes only six tools; the execution-layer
   tools and the local reader exist in source but are not in that release.
 - Node-operator materials are **not in this repository**. There is no `node/` directory here,
@@ -698,15 +706,23 @@ externa. En `@securestamp/action-proof`, `execution-guardian` y `execution-guard
 
 **Pendiente — huecos y defectos conocidos**
 
+Las correcciones de los tres primeros están **construidas y verificadas localmente pero todavía
+no publicadas**, así que todo lo de abajo describe lo que npm sirve hoy.
+
 - `@securestamp/action-proof-verify` declara un `bin`, pero el `dist/cli.js` publicado no tiene
   shebang en **las dos** versiones publicadas, así que el ejecutable no corre. La API de
-  librería sí funciona; usá esa. Corregirlo requiere un release.
-- `@securestamp/cli@1.0.0` documenta el prefijo de API key equivocado y su comando
-  `ss registry` apunta a un host donde la ruta no existe. Ambos requieren un release.
+  librería sí funciona; usá esa. *(Corregido y verificado en un `0.3.0-beta.3` sin publicar.)*
+- **`@securestamp/cli@1.0.0` tiene rotos tres de sus seis comandos.** `ss check` sin `--json` y
+  `ss batch` crashean por un estado de confianza indefinido — el campo que leen no existe en la
+  respuesta — y `ss registry` apunta a un host donde la ruta no existe. Su README además
+  documenta el prefijo de API key equivocado, y su piso de `engines` en `>=22.22.2` deja afuera
+  a Node 20 LTS bajo `engine-strict`. *(Todo corregido y verificado en un `1.0.1` sin publicar.)*
 - `@securestamp/cli` y `@securestamp/action-proof-verify` declaran Apache-2.0 pero no incluyen
-  archivo `LICENSE` en el tarball.
+  archivo `LICENSE` en el tarball. *(Las builds sin publicar ya lo incluyen.)*
 - `@securestamp/action-proof` y `@securestamp/action-proof-verify` declaran los dos un bin
-  llamado `action-proof-verify`; instalar ambos globalmente colisiona.
+  llamado `action-proof-verify`. Instalar ambos hace que **gane el emisor**, así que podés correr
+  el CLI del emisor creyendo que corriste el verificador independiente. El verificador conserva
+  el nombre; el emisor pasa a `action-proof` en su próximo release.
 - La build publicada de `@securestamp/mcp-guard@0.1.0` expone sólo seis tools; las de la capa de
   ejecución y el lector local existen en el código pero no en ese release.
 - El material para operadores de nodo **no está en este repositorio**. Acá no hay directorio
