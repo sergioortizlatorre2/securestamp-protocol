@@ -186,40 +186,44 @@ El servicio remoto always-on es la superficie principal; el wrapper es el fallba
 
 Siete paquetes públicos, **Apache-2.0**.
 
-> **`npm install` resuelve `latest`, y `latest` suele estar atrás.** En tres paquetes el
+> **`npm install` resuelve `latest`, y `latest` suele estar atrás.** En cuatro paquetes el
 > prerelease más nuevo está bajo **`beta-unverified`**, que significa instalable y descubrible
 > pero **sin** pasar el gate de evidencia externa. Elegí el tag a propósito.
+>
+> El caso más filoso es el verificador: su `latest` es `0.3.0-beta.1`, cuyo `bin` no corre. La
+> build reparada es `0.3.0-beta.3`, publicada sólo bajo `beta-unverified`.
 
 ```bash
 # estable, sin tag
-npm install -g @securestamp/cli                          # → 1.0.0
+npm install -g @securestamp/cli                          # → 1.0.1
 npm install @securestamp/mcp-guard                        # → 0.1.0
 
 # lo que te da `latest` en la línea Action Proof
 npm install @securestamp/action-proof                     # → 0.2.0-beta.1  (¡no 0.3!)
-npm install @securestamp/action-proof-verify              # → 0.3.0-beta.1
+npm install @securestamp/action-proof-verify              # → 0.3.0-beta.1  (el bin no corre)
 
 # hoy igual que latest, pero fijado al canal beta
 npm install @securestamp/action-proof@beta                # → 0.2.0-beta.1
 
 # la línea 0.3, explícita, sabiendo lo que el tag te retiene
 npm install @securestamp/action-proof@beta-unverified     # → 0.3.0-beta.2
+npm install @securestamp/action-proof-verify@beta-unverified  # → 0.3.0-beta.3  (bin funcionando)
 ```
 
 | Paquete | Deps | Node | `latest` | `beta` | `beta-unverified` |
 | --- | --- | --- | --- | --- | --- |
-| `@securestamp/cli` | 3 | ≥22.22.2 | `1.0.0` | — | — |
+| `@securestamp/cli` | 3 | ≥20 | `1.0.1` | — | — |
 | `@securestamp/mcp-guard` | 0 | ≥20 | `0.1.0` | — | — |
-| `@securestamp/action-proof-verify` | 0 | ≥20 | `0.3.0-beta.1` | — | `0.3.0-beta.2` |
+| `@securestamp/action-proof-verify` | 0 | ≥20 | `0.3.0-beta.1` | — | `0.3.0-beta.3` |
 | `@securestamp/action-registry` | 0 | ≥20 | `0.3.0-beta.1` | — | `0.3.0-beta.2` |
 | `@securestamp/action-proof` | 1 | ≥20 | `0.2.0-beta.1` | `0.2.0-beta.1` | `0.3.0-beta.2` |
 | `@securestamp/execution-guardian` | 9 | ≥22.5 | `0.2.0-beta.2` | `0.2.0-beta.2` | `0.3.0-beta.2` |
 | `@securestamp/execution-guardian-mcp` | 3 | ≥22.5 | `0.2.0-beta.1` | `0.2.0-beta.1` | `0.3.0-beta.2` |
 
 Un `—` significa que el tag no existe en ese paquete, no que apunte a otro lado. Ninguna versión
-publicada lleva attestation de provenance de npm, y `@securestamp/cli` y
-`@securestamp/action-proof-verify` no incluyen archivo `LICENSE` dentro de sus tarballs pese a
-declarar Apache-2.0.
+publicada de ningún paquete lleva attestation de provenance de npm. El `LICENSE` ya viaja en
+`@securestamp/cli@1.0.1` y en `@securestamp/action-proof-verify@0.3.0-beta.3`; el `latest` del
+verificador (`0.3.0-beta.1`) sigue sin ninguno.
 
 ### El CLI
 
@@ -234,20 +238,16 @@ ss status                            # necesita clave
 SPF/DKIM/DMARC y razones. Las claves se guardan con permisos `0600` en
 `~/.securestamp/config.json`; `SS_API_KEY` y `SS_API_BASE` pisan el archivo.
 
-> **El `1.0.0` publicado está bastante roto — verificado el 2026-09-06 ejecutándolo.**
-> `ss check` sin `--json` y `ss batch` crashean con un `TypeError` (leen un campo de confianza
-> que la API no devuelve); `ss registry` responde `HTTP 404` (su ruta vive en `.org`, no en la
-> base `.online` por defecto); el README documenta `sk_live_` cuando el binario exige
-> `ss_live_`/`ss_test_`; y `engines` pide Node `>=22.22.2`, que deja afuera a Node 20 LTS.
-> Lo que sí funciona en `1.0.0`: `ss check --json`, `ss status`, `ss login`, `ss logout`.
->
-> ```bash
-> # workarounds en 1.0.0
-> ss check securestamp.org --json
-> SS_API_BASE=https://securestamp.org ss registry securestamp.org --json
-> ```
->
-> Hay un `1.0.1` corregido y verificado, pero **todavía sin publicar**.
+`1.0.1` está en `latest`, así que un install pelado ya lo trae. Reparó tres comandos que estaban
+rotos en `1.0.0`, verificados ejecutándolos: `ss check` sin `--json` y `ss batch` crasheaban con
+un `TypeError` por un campo de confianza que la API no devuelve, y `ss registry` respondía
+`HTTP 404` porque su ruta la sirve `.org`, no la base `.online` por defecto. `1.0.1` además deja
+de contar un estado desconocido como confiable, lee su versión de `package.json` en vez de un
+string hardcodeado, incluye `LICENSE`, y baja el piso de `engines` de `>=22.22.2` —que dejaba
+afuera a Node 20 LTS— a `>=20.0.0`.
+
+> **Fijá `>=1.0.1`** si scripteás contra el CLI. En `1.0.0` sólo se portan bien
+> `ss check --json`, `ss status`, `ss login` y `ss logout`.
 
 **Empezá por el verificador.** Es la puerta de entrada del ecosistema, no un accesorio: sin
 acceso a red, sin dependencias, y se publica *antes* de lo que verifica, así que un

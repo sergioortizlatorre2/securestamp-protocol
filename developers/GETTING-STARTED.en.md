@@ -187,40 +187,44 @@ The remote always-on service is the primary surface; the wrapper is the stdio fa
 
 Seven public packages, **Apache-2.0**.
 
-> **`npm install` resolves `latest`, and `latest` is often behind.** For three packages the
+> **`npm install` resolves `latest`, and `latest` is often behind.** For four packages the
 > newest prerelease sits under **`beta-unverified`**, which means installable and discoverable
 > but **not** past the external evidence gate. Choose the tag on purpose.
+>
+> The sharpest case is the verifier: its `latest` is `0.3.0-beta.1`, whose `bin` does not run.
+> The repaired build is `0.3.0-beta.3`, published under `beta-unverified` only.
 
 ```bash
 # stable, no tag needed
-npm install -g @securestamp/cli                         # → 1.0.0
-npm install @securestamp/mcp-guard                       # → 0.1.0
+npm install -g @securestamp/cli                          # → 1.0.1
+npm install @securestamp/mcp-guard                        # → 0.1.0
 
 # what `latest` gives you on the Action Proof line
-npm install @securestamp/action-proof                    # → 0.2.0-beta.1  (not 0.3!)
-npm install @securestamp/action-proof-verify             # → 0.3.0-beta.1
+npm install @securestamp/action-proof                     # → 0.2.0-beta.1  (not 0.3!)
+npm install @securestamp/action-proof-verify              # → 0.3.0-beta.1  (bin does not run)
 
 # same as latest today, but pinned to the beta channel
-npm install @securestamp/action-proof@beta               # → 0.2.0-beta.1
+npm install @securestamp/action-proof@beta                # → 0.2.0-beta.1
 
 # the 0.3 line, explicitly, knowing what the tag withholds
-npm install @securestamp/action-proof@beta-unverified    # → 0.3.0-beta.2
+npm install @securestamp/action-proof@beta-unverified     # → 0.3.0-beta.2
+npm install @securestamp/action-proof-verify@beta-unverified  # → 0.3.0-beta.3  (working bin)
 ```
 
 | Package | Deps | Node | `latest` | `beta` | `beta-unverified` |
 | --- | --- | --- | --- | --- | --- |
-| `@securestamp/cli` | 3 | ≥22.22.2 | `1.0.0` | — | — |
+| `@securestamp/cli` | 3 | ≥20 | `1.0.1` | — | — |
 | `@securestamp/mcp-guard` | 0 | ≥20 | `0.1.0` | — | — |
-| `@securestamp/action-proof-verify` | 0 | ≥20 | `0.3.0-beta.1` | — | `0.3.0-beta.2` |
+| `@securestamp/action-proof-verify` | 0 | ≥20 | `0.3.0-beta.1` | — | `0.3.0-beta.3` |
 | `@securestamp/action-registry` | 0 | ≥20 | `0.3.0-beta.1` | — | `0.3.0-beta.2` |
 | `@securestamp/action-proof` | 1 | ≥20 | `0.2.0-beta.1` | `0.2.0-beta.1` | `0.3.0-beta.2` |
 | `@securestamp/execution-guardian` | 9 | ≥22.5 | `0.2.0-beta.2` | `0.2.0-beta.2` | `0.3.0-beta.2` |
 | `@securestamp/execution-guardian-mcp` | 3 | ≥22.5 | `0.2.0-beta.1` | `0.2.0-beta.1` | `0.3.0-beta.2` |
 
 A `—` means the tag does not exist on that package, not that it points somewhere else. No
-published version carries an npm provenance attestation, and `@securestamp/cli` and
-`@securestamp/action-proof-verify` ship no `LICENSE` file inside their tarballs despite
-declaring Apache-2.0.
+published version of any package carries an npm provenance attestation. `LICENSE` now ships in
+`@securestamp/cli@1.0.1` and `@securestamp/action-proof-verify@0.3.0-beta.3`; the verifier's
+`latest` (`0.3.0-beta.1`) still has none.
 
 ### The CLI
 
@@ -235,20 +239,16 @@ ss status                            # needs a key
 signals and reasons. Keys are stored `0600` at `~/.securestamp/config.json`; `SS_API_KEY` and
 `SS_API_BASE` override the file.
 
-> **The published `1.0.0` is substantially broken — verified 2026-09-06 by running it.**
-> `ss check` without `--json` and `ss batch` both crash with a `TypeError` (they read a trust
-> field the API does not return); `ss registry` answers `HTTP 404` (its route lives on `.org`,
-> not the default `.online`); the README documents `sk_live_` while the binary requires
-> `ss_live_`/`ss_test_`; and `engines` demands Node `>=22.22.2`, which blocks Node 20 LTS.
-> What still works on `1.0.0`: `ss check --json`, `ss status`, `ss login`, `ss logout`.
->
-> ```bash
-> # workarounds on 1.0.0
-> ss check securestamp.org --json
-> SS_API_BASE=https://securestamp.org ss registry securestamp.org --json
-> ```
->
-> A fixed `1.0.1` is built and verified but **not yet published**.
+`1.0.1` is on `latest`, so a plain install gets it. It repaired three commands that were broken
+in `1.0.0` and verified by running them: `ss check` without `--json` and `ss batch` both crashed
+with a `TypeError` on a trust field the API does not return, and `ss registry` answered
+`HTTP 404` because its route is served by `.org`, not the default `.online`. `1.0.1` also stops
+counting an unknown state as trusted, reads its version from `package.json` instead of a
+hardcoded string, ships `LICENSE`, and lowers the `engines` floor from `>=22.22.2` — which
+blocked Node 20 LTS — to `>=20.0.0`.
+
+> **Pin `>=1.0.1`** if you script against the CLI. On `1.0.0` only `ss check --json`,
+> `ss status`, `ss login` and `ss logout` behave.
 
 **Start with the verifier.** It is the entry point of the ecosystem, not an accessory: no
 network access, no dependencies, and it is published *ahead of* what it verifies, so a

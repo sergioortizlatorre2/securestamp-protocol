@@ -165,15 +165,19 @@ Design invariants a developer should know before integrating:
 Seven packages are public on npm under **Apache-2.0**.
 
 > **Read this before `npm install`.** `npm install <pkg>` resolves the **`latest`** tag, and for
-> several packages `latest` is deliberately **older** than the newest prerelease. The
-> `0.3.0-beta.2` line sits under **`beta-unverified`**: installable and discoverable, but it has
+> several packages `latest` is deliberately **older** than the newest prerelease. The `0.3.0`
+> prereleases sit under **`beta-unverified`**: installable and discoverable, but they have
 > **not** cleared the external evidence gate. Ask for a tag explicitly when you want one.
+>
+> This matters most for the verifier: `latest` is still `0.3.0-beta.1`, whose `bin` does not
+> execute. The repaired build is `0.3.0-beta.3`, and it is reachable only through
+> `@beta-unverified`.
 
 | Package | What it is | `latest` | `beta` | `beta-unverified` |
 | --- | --- | --- | --- | --- |
-| [`@securestamp/cli`](https://www.npmjs.com/package/@securestamp/cli) | Terminal trust checks — `ss check`, `ss registry`, `ss status`. **Stable.** | `1.0.0` | — | — |
+| [`@securestamp/cli`](https://www.npmjs.com/package/@securestamp/cli) | Terminal trust checks — `ss check`, `ss registry`, `ss batch`, `ss status`. **Stable.** | `1.0.1` | — | — |
 | [`@securestamp/mcp-guard`](https://www.npmjs.com/package/@securestamp/mcp-guard) | Local stdio wrapper for hosts that only speak stdio. | `0.1.0` | — | — |
-| [`@securestamp/action-proof-verify`](https://www.npmjs.com/package/@securestamp/action-proof-verify) | Offline, dependency-free verifier for receipts and proof bundles. No network. **Start here.** | `0.3.0-beta.1` | — | `0.3.0-beta.2` |
+| [`@securestamp/action-proof-verify`](https://www.npmjs.com/package/@securestamp/action-proof-verify) | Offline, dependency-free verifier for receipts and proof bundles. No network. **Start here.** | `0.3.0-beta.1` | — | `0.3.0-beta.3` |
 | [`@securestamp/action-registry`](https://www.npmjs.com/package/@securestamp/action-registry) | Dependency-free declarative registry of operations. | `0.3.0-beta.1` | — | `0.3.0-beta.2` |
 | [`@securestamp/action-proof`](https://www.npmjs.com/package/@securestamp/action-proof) | Protocol primitives: source envelopes, canonical effects, grants, bundles, signing. | `0.2.0-beta.1` | `0.2.0-beta.1` | `0.3.0-beta.2` |
 | [`@securestamp/execution-guardian`](https://www.npmjs.com/package/@securestamp/execution-guardian) | The customer-controlled execution daemon. Holds *your* provider credentials. | `0.2.0-beta.2` | `0.2.0-beta.2` | `0.3.0-beta.2` |
@@ -200,11 +204,10 @@ ss check securestamp.org --json
 reporting need a key (`ss login ss_live_…` or `ss_test_…`, stored `0600` under
 `~/.securestamp/config.json`; `SS_API_KEY` also works).
 
-> **Two defects in `1.0.0`, verified 2026-09-06.** The shipped README says
-> `ss login sk_live_xxxx`; the binary actually requires the `ss_live_` / `ss_test_` prefixes.
-> And `ss registry` calls a path that exists on `.org` but not on `.online`, so it returns
-> `HTTP 404` with the default base URL. Until a release fixes it, point the CLI at `.org`:
-> `SS_API_BASE=https://securestamp.org ss registry <domain>` — verified working.
+`1.0.1` repaired three commands that were broken in `1.0.0`: `ss check` without `--json` and
+`ss batch` both crashed on a trust field the API does not return, and `ss registry` targeted a
+host where the route does not exist. It also lowered the `engines` floor to `>=20.0.0`, which had
+been `>=22.22.2`. `latest` points at `1.0.1`, so a plain install now gets the repaired build.
 
 ### SSFML — on-device recognition
 
@@ -313,7 +316,7 @@ Each row below was checked against the deployed service or the public registry o
 | Auth required, fail-closed | `/mcp` returns `401` on GET and POST without a token |
 | OAuth protected-resource metadata | `/.well-known/oauth-protected-resource` `200` |
 | Public receipt lookup | `/api/action/receipts/<id>` — `404` on an unknown id |
-| `@securestamp/cli` | `1.0.0` on `latest`; `ss check` verified against production |
+| `@securestamp/cli` | `1.0.1` on `latest`; every command run against production |
 | `@securestamp/mcp-guard` | `0.1.0` on `latest` |
 | SSFML signed pack channel | `stable`, engine `2.5.0`, rollout 100 %, signature present |
 | SSFML engine + tests | `MODEL_VERSION = '2.5.0'`; 1 828 tests across 82 files passing |
@@ -321,30 +324,26 @@ Each row below was checked against the deployed service or the public registry o
 
 **Prerelease — published, explicitly unverified**
 
-The `0.3.0-beta.2` line sits under the `beta-unverified` dist-tag and a `server.json` that says
+The `0.3.0` prereleases sit under the `beta-unverified` dist-tag and a `server.json` that says
 so. Discoverable is not certified; the verified beta still requires the external evidence gate.
 For `@securestamp/action-proof`, `execution-guardian` and `execution-guardian-mcp`, `latest`
-and `beta` both still point at the 0.2 line.
+and `beta` both still point at the 0.2 line. `@securestamp/action-proof-verify@0.3.0-beta.3` —
+the build whose `bin` actually runs — is published under `beta-unverified` only; its `latest`
+stays at `0.3.0-beta.1` deliberately.
 
 **Pending — known gaps and defects**
 
-Fixes for the first three are **built and verified locally but not yet published**, so
-everything below still describes what npm serves today.
-
-- `@securestamp/action-proof-verify` declares a `bin`, but the published `dist/cli.js` has no
-  shebang in **both** published versions, so the executable does not run. The library API works;
-  use it instead. *(Fixed and verified in an unreleased `0.3.0-beta.3`.)*
-- **`@securestamp/cli@1.0.0` has three of its six commands broken.** `ss check` without `--json`
-  and `ss batch` both crash on an undefined trust state — the response field they read does not
-  exist — and `ss registry` targets a host where the route does not exist. Its README also
-  documents the wrong API-key prefix, and its `engines` floor of `>=22.22.2` locks out Node 20
-  LTS under `engine-strict`. *(All fixed and verified in an unreleased `1.0.1`.)*
-- `@securestamp/cli` and `@securestamp/action-proof-verify` declare Apache-2.0 but ship no
-  `LICENSE` file in the tarball. *(Both now carry it in the unreleased builds.)*
-- `@securestamp/action-proof` and `@securestamp/action-proof-verify` both declare a bin named
-  `action-proof-verify`. Installing both makes **the emitter win**, so you can run the emitter's
-  CLI believing you ran the independent verifier. The verifier keeps the name; the emitter's next
-  release renames its own to `action-proof`.
+- **A default install of the verifier still gets the broken binary.** `latest` is
+  `0.3.0-beta.1`, whose `dist/cli.js` has no shebang, so the executable does not run and no
+  `LICENSE` ships. The repaired `0.3.0-beta.3` carries both, but only under `beta-unverified`.
+  Install `@securestamp/action-proof-verify@beta-unverified`, or use the library API, which works
+  on every version.
+- `@securestamp/action-proof` still declares a bin named `action-proof-verify`, and installing it
+  alongside the verifier makes **the emitter win** — you can run the emitter's CLI believing you
+  ran the independent verifier. The verifier keeps the name and the emitter takes `action-proof`,
+  but that rename ships only when `@securestamp/action-proof` is next released.
+- No published version of any package carries an npm provenance attestation, including the two
+  most recent releases.
 - The published `@securestamp/mcp-guard@0.1.0` build exposes only six tools; the execution-layer
   tools and the local reader exist in source but are not in that release.
 - Node-operator materials are **not in this repository**. There is no `node/` directory here,
@@ -543,15 +542,19 @@ Invariantes de diseño que conviene conocer antes de integrar:
 Siete paquetes públicos en npm bajo **Apache-2.0**.
 
 > **Leé esto antes de `npm install`.** `npm install <pkg>` resuelve el tag **`latest`**, y en
-> varios paquetes `latest` es deliberadamente **más viejo** que el prerelease más nuevo. La
-> línea `0.3.0-beta.2` está bajo **`beta-unverified`**: instalable y descubrible, pero **no**
-> pasó el gate de evidencia externa. Pedí el tag explícitamente cuando quieras uno.
+> varios paquetes `latest` es deliberadamente **más viejo** que el prerelease más nuevo. Los
+> prereleases `0.3.0` están bajo **`beta-unverified`**: instalables y descubribles, pero **no**
+> pasaron el gate de evidencia externa. Pedí el tag explícitamente cuando quieras uno.
+>
+> Donde más importa es en el verificador: `latest` sigue en `0.3.0-beta.1`, cuyo `bin` no
+> ejecuta. La build reparada es `0.3.0-beta.3`, y se alcanza únicamente por
+> `@beta-unverified`.
 
 | Paquete | Qué es | `latest` | `beta` | `beta-unverified` |
 | --- | --- | --- | --- | --- |
-| [`@securestamp/cli`](https://www.npmjs.com/package/@securestamp/cli) | Chequeos de confianza desde la terminal — `ss check`, `ss registry`, `ss status`. **Estable.** | `1.0.0` | — | — |
+| [`@securestamp/cli`](https://www.npmjs.com/package/@securestamp/cli) | Chequeos de confianza desde la terminal — `ss check`, `ss registry`, `ss batch`, `ss status`. **Estable.** | `1.0.1` | — | — |
 | [`@securestamp/mcp-guard`](https://www.npmjs.com/package/@securestamp/mcp-guard) | Wrapper stdio local para hosts que sólo hablan stdio. | `0.1.0` | — | — |
-| [`@securestamp/action-proof-verify`](https://www.npmjs.com/package/@securestamp/action-proof-verify) | Verificador offline y sin dependencias de receipts y proof bundles. Sin red. **Empezá acá.** | `0.3.0-beta.1` | — | `0.3.0-beta.2` |
+| [`@securestamp/action-proof-verify`](https://www.npmjs.com/package/@securestamp/action-proof-verify) | Verificador offline y sin dependencias de receipts y proof bundles. Sin red. **Empezá acá.** | `0.3.0-beta.1` | — | `0.3.0-beta.3` |
 | [`@securestamp/action-registry`](https://www.npmjs.com/package/@securestamp/action-registry) | Registro declarativo de operaciones, sin dependencias. | `0.3.0-beta.1` | — | `0.3.0-beta.2` |
 | [`@securestamp/action-proof`](https://www.npmjs.com/package/@securestamp/action-proof) | Primitivas del protocolo: source envelopes, efectos canónicos, grants, bundles, firma. | `0.2.0-beta.1` | `0.2.0-beta.1` | `0.3.0-beta.2` |
 | [`@securestamp/execution-guardian`](https://www.npmjs.com/package/@securestamp/execution-guardian) | El daemon de ejecución controlado por el cliente. Tiene *tus* credenciales de proveedor. | `0.2.0-beta.2` | `0.2.0-beta.2` | `0.3.0-beta.2` |
@@ -578,11 +581,10 @@ ss check securestamp.org --json
 reporte de cuota sí necesitan clave (`ss login ss_live_…` o `ss_test_…`, guardada con permisos
 `0600` en `~/.securestamp/config.json`; `SS_API_KEY` también sirve).
 
-> **Dos defectos en `1.0.0`, verificados el 2026-09-06.** El README publicado dice
-> `ss login sk_live_xxxx`; el binario en realidad exige los prefijos `ss_live_` / `ss_test_`.
-> Y `ss registry` llama a una ruta que existe en `.org` pero no en `.online`, así que devuelve
-> `HTTP 404` con la base por defecto. Hasta que un release lo corrija, apuntá el CLI a `.org`:
-> `SS_API_BASE=https://securestamp.org ss registry <dominio>` — verificado funcionando.
+`1.0.1` reparó tres comandos que estaban rotos en `1.0.0`: `ss check` sin `--json` y `ss batch`
+crasheaban por un campo de confianza que la API no devuelve, y `ss registry` apuntaba a un host
+donde la ruta no existe. También bajó el piso de `engines` a `>=20.0.0`, que estaba en
+`>=22.22.2`. `latest` apunta a `1.0.1`, así que un install pelado ya trae la build reparada.
 
 ### SSFML — reconocimiento on-device
 
@@ -691,7 +693,7 @@ Cada fila de abajo se comprobó contra el servicio desplegado o el registro púb
 | Auth obligatoria, fail-closed | `/mcp` devuelve `401` en GET y POST sin token |
 | Metadata OAuth de protected-resource | `/.well-known/oauth-protected-resource` `200` |
 | Lookup público de receipts | `/api/action/receipts/<id>` — `404` con un id inexistente |
-| `@securestamp/cli` | `1.0.0` en `latest`; `ss check` verificado contra producción |
+| `@securestamp/cli` | `1.0.1` en `latest`; todos sus comandos corridos contra producción |
 | `@securestamp/mcp-guard` | `0.1.0` en `latest` |
 | Canal firmado de packs SSFML | `stable`, motor `2.5.0`, rollout 100 %, firma presente |
 | Motor SSFML + tests | `MODEL_VERSION = '2.5.0'`; 1 828 tests en 82 archivos pasando |
@@ -699,30 +701,26 @@ Cada fila de abajo se comprobó contra el servicio desplegado o el registro púb
 
 **Prerelease — publicado, explícitamente no verificado**
 
-La línea `0.3.0-beta.2` está bajo el dist-tag `beta-unverified` y un `server.json` que lo
+Los prereleases `0.3.0` están bajo el dist-tag `beta-unverified` y un `server.json` que lo
 declara. Descubrible no es certificado; la beta verificada sigue exigiendo el gate de evidencia
 externa. En `@securestamp/action-proof`, `execution-guardian` y `execution-guardian-mcp`,
-`latest` y `beta` siguen apuntando a la línea 0.2.
+`latest` y `beta` siguen apuntando a la línea 0.2. `@securestamp/action-proof-verify@0.3.0-beta.3`
+—la build cuyo `bin` sí corre— está publicada sólo bajo `beta-unverified`; su `latest` queda
+deliberadamente en `0.3.0-beta.1`.
 
 **Pendiente — huecos y defectos conocidos**
 
-Las correcciones de los tres primeros están **construidas y verificadas localmente pero todavía
-no publicadas**, así que todo lo de abajo describe lo que npm sirve hoy.
-
-- `@securestamp/action-proof-verify` declara un `bin`, pero el `dist/cli.js` publicado no tiene
-  shebang en **las dos** versiones publicadas, así que el ejecutable no corre. La API de
-  librería sí funciona; usá esa. *(Corregido y verificado en un `0.3.0-beta.3` sin publicar.)*
-- **`@securestamp/cli@1.0.0` tiene rotos tres de sus seis comandos.** `ss check` sin `--json` y
-  `ss batch` crashean por un estado de confianza indefinido — el campo que leen no existe en la
-  respuesta — y `ss registry` apunta a un host donde la ruta no existe. Su README además
-  documenta el prefijo de API key equivocado, y su piso de `engines` en `>=22.22.2` deja afuera
-  a Node 20 LTS bajo `engine-strict`. *(Todo corregido y verificado en un `1.0.1` sin publicar.)*
-- `@securestamp/cli` y `@securestamp/action-proof-verify` declaran Apache-2.0 pero no incluyen
-  archivo `LICENSE` en el tarball. *(Las builds sin publicar ya lo incluyen.)*
-- `@securestamp/action-proof` y `@securestamp/action-proof-verify` declaran los dos un bin
-  llamado `action-proof-verify`. Instalar ambos hace que **gane el emisor**, así que podés correr
-  el CLI del emisor creyendo que corriste el verificador independiente. El verificador conserva
-  el nombre; el emisor pasa a `action-proof` en su próximo release.
+- **Un install por defecto del verificador todavía trae el binario roto.** `latest` es
+  `0.3.0-beta.1`, cuyo `dist/cli.js` no tiene shebang, así que el ejecutable no corre y no viaja
+  ningún `LICENSE`. El `0.3.0-beta.3` reparado trae las dos cosas, pero sólo bajo
+  `beta-unverified`. Instalá `@securestamp/action-proof-verify@beta-unverified`, o usá la API de
+  librería, que funciona en todas las versiones.
+- `@securestamp/action-proof` sigue declarando un bin llamado `action-proof-verify`, e instalarlo
+  junto al verificador hace que **gane el emisor** — podés correr el CLI del emisor creyendo que
+  corriste el verificador independiente. El verificador conserva el nombre y el emisor pasa a
+  `action-proof`, pero ese rename sale recién cuando se publique `@securestamp/action-proof`.
+- Ninguna versión publicada de ningún paquete lleva attestation de provenance de npm, incluidos
+  los dos releases más recientes.
 - La build publicada de `@securestamp/mcp-guard@0.1.0` expone sólo seis tools; las de la capa de
   ejecución y el lector local existen en el código pero no en ese release.
 - El material para operadores de nodo **no está en este repositorio**. Acá no hay directorio
