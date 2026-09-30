@@ -251,7 +251,7 @@ El marketplace `securestamp.store` es el hogar de estas colecciones. Los filatel
 El protocolo es abierto. Podés implementar un verificador, un emisor de stamps, una extensión de browser o una integración de mail server sin ningún permiso. La especificación está en [protocol/SECURESTAMP-PROTOCOL-v0.1.es.md](../protocol/SECURESTAMP-PROTOCOL-v0.1.es.md).
 
 ### Como organización (emisor de stamps)
-Registrarse en [securestamp.online](https://securestamp.online) para obtener un stamp para tu dominio. Planes desde gratuito hasta enterprise.
+Registrarse en [securestamp.online](https://securestamp.online) para obtener un stamp para tu dominio.
 
 ### Como operador de nodo
 Si tu organización puede contribuir un nodo aprobado a la red, aplicar en `securestamp.org/node-application`.

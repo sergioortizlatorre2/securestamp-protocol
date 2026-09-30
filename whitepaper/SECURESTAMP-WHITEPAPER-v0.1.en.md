@@ -251,7 +251,7 @@ The `securestamp.store` marketplace is the home of these collections. Digital ph
 The protocol is open. You can implement a verifier, a stamp emitter, a browser extension, or a mail server integration without any permission. The specification is at [protocol/SECURESTAMP-PROTOCOL-v0.1.en.md](../protocol/SECURESTAMP-PROTOCOL-v0.1.en.md).
 
 ### As an organization (stamp issuer)
-Register at [securestamp.online](https://securestamp.online) to obtain a stamp for your domain. Plans from free to enterprise.
+Register at [securestamp.online](https://securestamp.online) to obtain a stamp for your domain.
 
 ### As a node operator
 If your organization can contribute an approved node to the network, apply at `securestamp.org/node-application`.

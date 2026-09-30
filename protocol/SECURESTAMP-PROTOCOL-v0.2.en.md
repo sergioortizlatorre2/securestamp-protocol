@@ -125,7 +125,7 @@ channel-level trust across email, web, Telegram, and WhatsApp. Answers *"is this
 inbound thing safe for a human to trust and act on?"*.
 
 ### 5.3 MCP Guard — Agent Trust Layer
-A remote MCP interface that AI agents, copilots, and workflows consult **before**
+A remote MCP interface that AI agents, assistants, and workflows consult **before**
 executing a sensitive action. Answers *"as an autonomous agent, am I allowed to do
 this?"*. Specified in §6.
 
@@ -143,7 +143,6 @@ money, deletes data, or performs destructive operations.
 | Environment | Endpoint | Status |
 |---|---|---|
 | Production | `https://mcp.securestamp.online/mcp` | **Live** (HTTPS) |
-| Staging | `https://mcp-staging.securestamp.online/mcp` | Live (integration testing) |
 
 The manifest is served at `/.well-known/securestamp-mcp.json`.
 
@@ -317,7 +316,7 @@ actually ships today. It backs, for example:
 **Roadmap / not yet claimed:**
 
 - Conformance with any specific third-party MCP host or client (e.g. desktop agents,
-  IDE copilots) — **not** independently smoke-verified; not asserted.
+  IDE assistants) — **not** independently smoke-verified; not asserted.
 - A published stdio wrapper package on a public registry.
 - Marketplace listings.
 - A permissioned distributed ledger (Hyperledger Fabric) as a multi-operator substrate

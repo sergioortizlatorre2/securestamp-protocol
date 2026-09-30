@@ -89,7 +89,7 @@ esto que llegó?"*
 
 ### MCP Guard — para agentes de IA
 Un servidor [Model Context Protocol](https://modelcontextprotocol.io) remoto que
-agentes, copilotos y workflows consultan **antes** de actuar. *"Como agente autónomo,
+agentes, asistentes y workflows consultan **antes** de actuar. *"Como agente autónomo,
 ¿tengo permitido hacer esto?"* Este es el pilar que la era de la IA exige, y está
 productivo.
 
@@ -191,7 +191,7 @@ verificado end-to-end.**
 
 **Roadmap / aún no reclamado:**
 - Conformidad verificada con cualquier host o cliente MCP de terceros específico
-  (agentes de escritorio, copilotos de IDE) — no probado con smoke independiente; no se
+  (agentes de escritorio, asistentes de IDE) — no probado con smoke independiente; no se
   afirma.
 - Un wrapper stdio publicado en un registro público, y listados en marketplaces.
 - Un ledger distribuido permisionado como sustrato multi-operador (ADR-004).
