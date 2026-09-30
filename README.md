@@ -7,7 +7,8 @@
 
 <sub>Every endpoint, tool name, dist-tag and version on this page was checked against the deployed
 services and the public npm registry on **2026-09-06** — including downloading and opening the
-published tarballs. Anything that could not be verified is listed under
+published tarballs — and re-checked on **2026-09-30**: dist-tags, the MCP Guard service version
+and its nine-tool catalog were unchanged. Anything that could not be verified is listed under
 [Live / prerelease / pending](#live--prerelease--pending), together with the defects that check
 turned up.</sub>
 
@@ -20,7 +21,8 @@ turned up.</sub>
 | If you want to… | Go to |
 | --- | --- |
 | Understand the idea in five minutes | this page |
-| **Connect an agent, copilot or MCP host** | **[Getting Started](developers/GETTING-STARTED.en.md)** |
+| **Connect an agent, assistant or MCP host** | **[Getting Started](developers/GETTING-STARTED.en.md)** |
+| **Diagnose and bound what an agent or harness can do** | **[Agents and harnesses](developers/AGENTS-AND-HARNESSES.en.md)** |
 | **Check a domain from the terminal right now** | [The CLI](#the-cli) — no API key needed |
 | Install the packages | [npm packages](#npm-packages) — *read the dist-tag note first* |
 | Verify a receipt or a proof bundle offline | [Getting Started §5](developers/GETTING-STARTED.en.md#5-verify-without-an-account) |
@@ -115,6 +117,27 @@ curl -sS https://mcp.securestamp.online/mcp \
 
 Full connection recipes for all three modes: **[Getting Started](developers/GETTING-STARTED.en.md)**.
 
+### Agents and harnesses
+
+MCP is one route. A coding agent also reaches the shell, files, scripts and direct API calls,
+and its harness — mounts, sockets, credential helpers, proxies, network — decides its real
+authority. SecureStamp applies the same rule to all of them: **agents can propose; authority
+stays outside the agent**, and coverage is limited to declared and tested routes.
+
+- **Doctor** — a static diagnosis of the configuration you already have: MCP server files,
+  native client settings, agent workflows and complete harness profiles. It never executes
+  what it reads and proposes corrections on a copy.
+- **Portable scenario** — one versioned JSON document (`SSPI-execution-scenario`) drives the
+  CLI, the library and any dashboard, with idempotent `hold` / `resume` / `stop` orders.
+- **Exact Export** — the agent prepares a change; only the frozen, reviewed candidate leaves,
+  through the Guardian.
+- **Reports** — route result, coverage, integration level and completeness are kept apart;
+  an unevaluated route is never reported as protected.
+
+Commands, contracts and limits: **[Agents and harnesses](developers/AGENTS-AND-HARNESSES.en.md)**.
+The Doctor binaries and `@securestamp/execution-governance` ship in the next release; see the
+availability note there.
+
 ### Action Proof and the Execution Guardian
 
 Proof-of-Intent answers *may this happen?* **Action Proof** answers the harder question
@@ -193,6 +216,13 @@ why their `latest` runs ahead of the emitter's.
 **No published version carries an npm provenance attestation.** Verify a tarball by its
 integrity hash and its contents, not by assuming a signed build chain.
 
+**Next release — not on the registry as of 2026-09-30.** `@securestamp/mcp-guard` adds the
+`securestamp-mcp-doctor` and `securestamp-harness` binaries next to `securestamp-mcp-guard`, and a
+new `@securestamp/execution-governance` package (Apache-2.0, Node `>=22.22.3`) carries the
+portable scenario, control-plane and report contracts plus the `securestamp-execution-governance`
+binary. Until they are published, `npm install` of those names resolves only what the table above
+lists. See [Agents and harnesses](developers/AGENTS-AND-HARNESSES.en.md).
+
 ### The CLI
 
 ```bash
@@ -230,8 +260,9 @@ Two versions travel together and mean different things:
 | **Knowledge-pack version** (`ssfmlRulesVersion`) | the active signed pack | `stable` channel, 100 % rollout | auto-updates in the background |
 
 The live pack manifest declares `minPluginVersion: 0.7.0`, so a plugin older than that never
-receives an update. Current plugin builds in the source tree are Gmail `0.8.2`,
-Outlook/M365 `1.10.2` and Safari `1.1.2`.
+receives an update. Current plugin builds are Gmail `0.8.3`,
+Outlook/Microsoft 365 `1.10.3` and Safari `1.1.2`. The Gmail extension is published on the Chrome
+Web Store and the Outlook add-in on Microsoft AppSource.
 
 The pack channel is **data-only and signed**: a pack manifest carries an ES256 signature over
 a SHA-256 of the artifact, the public key is pinned in the plugin, and a stable build rejects
@@ -287,6 +318,8 @@ native partner status with either platform.
 |---|---|
 | [`developers/GETTING-STARTED.en.md`](developers/GETTING-STARTED.en.md) | **Developer quickstart** — connect, install, verify (English) |
 | [`developers/GETTING-STARTED.es.md`](developers/GETTING-STARTED.es.md) | Developer quickstart (Spanish) |
+| [`developers/AGENTS-AND-HARNESSES.en.md`](developers/AGENTS-AND-HARNESSES.en.md) | **Agents and harnesses** — Doctor, portable scenario, Exact Export, hold/resume/stop, reports (English) |
+| [`developers/AGENTS-AND-HARNESSES.es.md`](developers/AGENTS-AND-HARNESSES.es.md) | Agents and harnesses (Spanish) |
 | [`protocol/SECURESTAMP-PROTOCOL-v0.2.en.md`](protocol/SECURESTAMP-PROTOCOL-v0.2.en.md) | **Current** protocol spec — Proof-of-Intent (English) |
 | [`protocol/SECURESTAMP-PROTOCOL-v0.2.es.md`](protocol/SECURESTAMP-PROTOCOL-v0.2.es.md) | Current protocol spec (Spanish) |
 | [`whitepaper/SECURESTAMP-WHITEPAPER-v0.2.en.md`](whitepaper/SECURESTAMP-WHITEPAPER-v0.2.en.md) | **Current** whitepaper + manifesto (English) |
@@ -304,7 +337,7 @@ the docs at [securestamp.org/en/docs/action-proof](https://securestamp.org/en/do
 ### Live / prerelease / pending
 
 Each row below was checked against the deployed service or the public registry on
-**2026-09-06**. Nothing here is asserted from a document.
+**2026-09-06** and re-checked on **2026-09-30**. Nothing here is asserted from a document.
 
 **Live — stable, externally checkable**
 
@@ -363,9 +396,8 @@ ledger (Fabric) as a multi-operator substrate.
 ### Links
 
 - 🌐 Foundation: [securestamp.org](https://securestamp.org)
-- 🚀 Product: [securestamp.online](https://securestamp.online)
-- 🎨 Marketplace: [securestamp.store](https://securestamp.store)
 - 🛠 Developer quickstart: [GETTING-STARTED.en.md](developers/GETTING-STARTED.en.md)
+- 🤖 Agents and harnesses: [AGENTS-AND-HARNESSES.en.md](developers/AGENTS-AND-HARNESSES.en.md)
 - 📖 Current protocol: [SECURESTAMP-PROTOCOL-v0.2.en.md](protocol/SECURESTAMP-PROTOCOL-v0.2.en.md)
 - 📄 Current whitepaper: [SECURESTAMP-WHITEPAPER-v0.2.en.md](whitepaper/SECURESTAMP-WHITEPAPER-v0.2.en.md)
 - 📦 npm: [`@securestamp`](https://www.npmjs.com/org/securestamp)
@@ -395,7 +427,8 @@ Technical collaboration: Ivan.
 | Si querés… | Andá a |
 | --- | --- |
 | Entender la idea en cinco minutos | esta página |
-| **Conectar un agente, copiloto o host MCP** | **[Guía de inicio](developers/GETTING-STARTED.es.md)** |
+| **Conectar un agente, asistente o host MCP** | **[Guía de inicio](developers/GETTING-STARTED.es.md)** |
+| **Diagnosticar y acotar lo que puede hacer un agente o un harness** | **[Agentes y harnesses](developers/AGENTS-AND-HARNESSES.es.md)** |
 | **Chequear un dominio desde la terminal ya mismo** | [El CLI](#el-cli) — sin API key |
 | Instalar los paquetes | [Paquetes npm](#paquetes-npm) — *leé primero la nota de dist-tags* |
 | Verificar un receipt o un proof bundle offline | [Guía de inicio §5](developers/GETTING-STARTED.es.md#5-verificar-sin-cuenta) |
@@ -492,6 +525,29 @@ curl -sS https://mcp.securestamp.online/mcp \
 
 Recetas completas de conexión para los tres modos: **[Guía de inicio](developers/GETTING-STARTED.es.md)**.
 
+### Agentes y harnesses
+
+MCP es una ruta. Un agente de código también llega a la shell, a los archivos, a scripts y a
+llamadas directas a APIs, y su harness —mounts, sockets, helpers de credenciales, proxies, red—
+decide su autoridad real. SecureStamp aplica la misma regla a todas: **los agentes pueden
+proponer; la autoridad queda fuera del agente**, y la cobertura se limita a las rutas declaradas
+y probadas.
+
+- **Doctor** — diagnóstico estático de la configuración que ya tenés: archivos de servidores
+  MCP, configuración nativa de clientes, workflows con agentes y perfiles de harness completos.
+  Nunca ejecuta lo que lee y propone correcciones sobre una copia.
+- **Escenario portable** — un único documento JSON versionado (`SSPI-execution-scenario`)
+  gobierna la CLI, la biblioteca y cualquier dashboard, con órdenes idempotentes
+  `hold` / `resume` / `stop`.
+- **Exact Export** — el agente prepara un cambio; sólo sale el candidato congelado y revisado, a
+  través del Guardian.
+- **Reportes** — resultado de ruta, cobertura, nivel de integración y completitud se mantienen
+  separados; una ruta sin evaluar nunca se informa como protegida.
+
+Comandos, contratos y límites: **[Agentes y harnesses](developers/AGENTS-AND-HARNESSES.es.md)**.
+Los binarios de Doctor y `@securestamp/execution-governance` salen en la próxima release; ver la
+nota de disponibilidad ahí.
+
 ### Action Proof y el Execution Guardian
 
 Proof-of-Intent responde *¿esto puede pasar?* **Action Proof** responde la pregunta más
@@ -570,6 +626,13 @@ emita. Por eso su `latest` va más adelante que el del emisor.
 **Ninguna versión publicada lleva attestation de provenance de npm.** Verificá un tarball por su
 hash de integridad y su contenido, no asumiendo una cadena de build firmada.
 
+**Próxima release — no está en el registro al 2026-09-30.** `@securestamp/mcp-guard` suma los
+binarios `securestamp-mcp-doctor` y `securestamp-harness` junto a `securestamp-mcp-guard`, y un
+paquete nuevo, `@securestamp/execution-governance` (Apache-2.0, Node `>=22.22.3`), trae los
+contratos del escenario portable, del plano de control y de los reportes, más el binario
+`securestamp-execution-governance`. Hasta que se publiquen, `npm install` de esos nombres resuelve
+sólo lo que lista la tabla de arriba. Ver [Agentes y harnesses](developers/AGENTS-AND-HARNESSES.es.md).
+
 ### El CLI
 
 ```bash
@@ -607,8 +670,9 @@ Viajan dos versiones y significan cosas distintas:
 | **Versión del knowledge-pack** (`ssfmlRulesVersion`) | el pack activo | canal `stable`, rollout 100 % | auto-actualiza en background |
 
 El manifiesto vivo del pack declara `minPluginVersion: 0.7.0`, así que un plugin más viejo que
-eso nunca recibe una actualización. Las builds actuales en el árbol de fuentes son Gmail
-`0.8.2`, Outlook/M365 `1.10.2` y Safari `1.1.2`.
+eso nunca recibe una actualización. Las builds actuales son Gmail `0.8.3`,
+Outlook/Microsoft 365 `1.10.3` y Safari `1.1.2`. La extensión de Gmail está publicada en Chrome
+Web Store y el complemento de Outlook en Microsoft AppSource.
 
 El canal de packs es **sólo datos y firmado**: el manifiesto lleva una firma ES256 sobre un
 SHA-256 del artefacto, la clave pública está pinneada en el plugin, y un build estable rechaza
@@ -663,6 +727,7 @@ estatus de partner oficial ni nativo con ninguna de las dos plataformas.
 | Ruta | Descripción |
 |---|---|
 | [`developers/GETTING-STARTED.es.md`](developers/GETTING-STARTED.es.md) | **Guía de inicio para developers** — conectar, instalar, verificar (español) |
+| [`developers/AGENTS-AND-HARNESSES.es.md`](developers/AGENTS-AND-HARNESSES.es.md) | **Agentes y harnesses** — Doctor, escenario portable, Exact Export, hold/resume/stop, reportes (español) |
 | [`developers/GETTING-STARTED.en.md`](developers/GETTING-STARTED.en.md) | Guía de inicio (inglés) |
 | [`protocol/SECURESTAMP-PROTOCOL-v0.2.es.md`](protocol/SECURESTAMP-PROTOCOL-v0.2.es.md) | Spec **actual** del protocolo — Proof-of-Intent (español) |
 | [`protocol/SECURESTAMP-PROTOCOL-v0.2.en.md`](protocol/SECURESTAMP-PROTOCOL-v0.2.en.md) | Spec actual del protocolo (inglés) |
@@ -681,7 +746,8 @@ documentación en [securestamp.org/es/docs/action-proof](https://securestamp.org
 ### Live / prerelease / pendiente
 
 Cada fila de abajo se comprobó contra el servicio desplegado o el registro público el
-**2026-09-06**. Nada de esto se afirma a partir de un documento.
+**2026-09-06** y se volvió a comprobar el **2026-09-30**. Nada de esto se afirma a partir de un
+documento.
 
 **Live — estable, comprobable desde afuera**
 
@@ -740,9 +806,8 @@ un ledger distribuido permisionado (Fabric) como sustrato multi-operador.
 ### Links
 
 - 🌐 Fundación: [securestamp.org](https://securestamp.org)
-- 🚀 Producto: [securestamp.online](https://securestamp.online)
-- 🎨 Marketplace: [securestamp.store](https://securestamp.store)
 - 🛠 Guía de inicio: [GETTING-STARTED.es.md](developers/GETTING-STARTED.es.md)
+- 🤖 Agentes y harnesses: [AGENTS-AND-HARNESSES.es.md](developers/AGENTS-AND-HARNESSES.es.md)
 - 📖 Protocolo actual: [SECURESTAMP-PROTOCOL-v0.2.es.md](protocol/SECURESTAMP-PROTOCOL-v0.2.es.md)
 - 📄 Whitepaper actual: [SECURESTAMP-WHITEPAPER-v0.2.es.md](whitepaper/SECURESTAMP-WHITEPAPER-v0.2.es.md)
 - 📦 npm: [`@securestamp`](https://www.npmjs.com/org/securestamp)

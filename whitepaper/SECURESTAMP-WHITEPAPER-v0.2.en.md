@@ -87,7 +87,7 @@ trust and act on?"*
 
 ### MCP Guard — for AI agents
 A remote [Model Context Protocol](https://modelcontextprotocol.io) server that agents,
-copilots, and workflows consult **before** they act. *"As an autonomous agent, am I
+assistants, and workflows consult **before** they act. *"As an autonomous agent, am I
 allowed to do this?"* This is the pillar the AI era demands, and it is production-live.
 
 ---
@@ -185,7 +185,7 @@ verified end-to-end.**
 
 **Roadmap / not yet claimed:**
 - Verified conformance with any specific third-party MCP host or client (desktop
-  agents, IDE copilots) — not independently smoke-tested; not asserted.
+  agents, IDE assistants) — not independently smoke-tested; not asserted.
 - A published stdio wrapper on a public registry, and marketplace listings.
 - A permissioned distributed ledger as a multi-operator substrate (ADR-004).
 
