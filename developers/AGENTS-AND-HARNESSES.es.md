@@ -7,12 +7,13 @@ shell, al sistema de archivos, a scripts, a llamadas directas a APIs y a las aut
 que su harness le deja alcanzar. Esta guía cubre el modelo técnico que usa SecureStamp para esa
 superficie más amplia y las herramientas que lo implementan.
 
-> **Disponibilidad, verificada el 2026-10-05.** El paquete publicado `@securestamp/mcp-guard@0.2.0`
-> expone `securestamp-mcp-guard`, `securestamp-mcp-doctor` y `securestamp-harness`. El paquete
-> separado `@securestamp/execution-governance` **todavía no está en npm**. La sección §3 aplica
-> hoy después de `npm install --save-dev @securestamp/mcp-guard`; la CLI del escenario portable
-> de §4 sigue disponible sólo desde el código fuente hasta que se publique ese paquete. Los
-> conceptos de §1, §2 y §5–§7 aplican hoy a los paquetes publicados de Action Proof.
+> **Disponibilidad, verificada el 2026-10-05.** `@securestamp/mcp-guard@0.2.1` expone
+> `securestamp-mcp-guard`, `securestamp-mcp-doctor` y `securestamp-harness`, y
+> `@securestamp/execution-governance@0.1.1` expone `securestamp-execution-governance` (Node
+> `>=22.22.3`; la `0.1.0` rechaza Node 22.23). La sección §3 aplica después de
+> `npm install --save-dev @securestamp/mcp-guard`, y la §4 después de
+> `npm install --save-dev @securestamp/execution-governance`. Los conceptos de §1, §2 y §5–§7
+> aplican hoy a los paquetes publicados de Action Proof.
 
 ## 1. El modelo en un párrafo
 
@@ -126,10 +127,10 @@ una corrida es inmutable respecto de la revisión con la que empezó.
 ```
 
 ```bash
-# @securestamp/execution-governance todavía no está en npm. Maintainers lo corren desde un checkout:
-pnpm --filter @securestamp/execution-governance build
-node packages/execution-governance/dist/cli.js validate scenario.json
-node packages/execution-governance/dist/cli.js run scenario.json --hold-before=step-1
+npm install --save-dev @securestamp/execution-governance
+
+npx securestamp-execution-governance validate scenario.json
+npx securestamp-execution-governance run scenario.json --hold-before=step-1
 ```
 
 `validate` imprime el id del escenario, la revisión y el digest. `run` ejecuta la referencia

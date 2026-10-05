@@ -186,7 +186,7 @@ The remote always-on service is the primary surface; the wrapper is the stdio fa
 
 ## 4. Install the packages
 
-Seven public packages, **Apache-2.0**.
+Eight public packages, **Apache-2.0**.
 
 > **`npm install` resolves `latest`, and `latest` is often behind.** For four packages the
 > newest prerelease sits under **`beta-unverified`**, which means installable and discoverable
@@ -198,7 +198,8 @@ Seven public packages, **Apache-2.0**.
 ```bash
 # stable, no tag needed
 npm install -g @securestamp/cli                          # → 1.0.1
-npm install @securestamp/mcp-guard                        # → 0.2.0 (MCP Guard + Doctor + Harness)
+npm install @securestamp/mcp-guard                        # → 0.2.1 (MCP Guard + Doctor + Harness)
+npm install @securestamp/execution-governance             # → 0.1.1 (Node ≥22.22.3)
 
 # what `latest` gives you on the Action Proof line
 npm install @securestamp/action-proof                     # → 0.2.0-beta.1  (not 0.3!)
@@ -215,7 +216,8 @@ npm install @securestamp/action-proof-verify@beta-unverified  # → 0.3.0-beta.3
 | Package | Deps | Node | `latest` | `beta` | `beta-unverified` |
 | --- | --- | --- | --- | --- | --- |
 | `@securestamp/cli` | 3 | ≥20 | `1.0.1` | — | — |
-| `@securestamp/mcp-guard` | 0 | ≥20 | `0.2.0` | — | — |
+| `@securestamp/mcp-guard` | 0 | ≥20 | `0.2.1` | — | — |
+| `@securestamp/execution-governance` | 1 | ≥22.22.3 | `0.1.1` | — | — |
 | `@securestamp/action-proof-verify` | 0 | ≥20 | `0.3.0-beta.1` | — | `0.3.0-beta.3` |
 | `@securestamp/action-registry` | 0 | ≥20 | `0.3.0-beta.1` | — | `0.3.0-beta.2` |
 | `@securestamp/action-proof` | 1 | ≥20 | `0.2.0-beta.1` | `0.2.0-beta.1` | `0.3.0-beta.2` |

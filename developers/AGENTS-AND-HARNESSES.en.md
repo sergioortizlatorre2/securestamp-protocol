@@ -7,12 +7,13 @@ the file system, scripts, direct API calls and whatever automations its harness 
 reach. This guide covers the technical model SecureStamp uses for that wider surface and the
 tools that implement it.
 
-> **Availability, checked 2026-10-05.** The published `@securestamp/mcp-guard@0.2.0` exposes
-> `securestamp-mcp-guard`, `securestamp-mcp-doctor` and `securestamp-harness`. The separate
-> `@securestamp/execution-governance` package is **not yet on npm**. Section §3 applies today
-> after `npm install --save-dev @securestamp/mcp-guard`; §4's portable scenario CLI remains
-> source-only until that package is published. The concepts in §1, §2 and §5–§7 apply today to
-> the published Action Proof packages.
+> **Availability, checked 2026-10-05.** `@securestamp/mcp-guard@0.2.1` exposes
+> `securestamp-mcp-guard`, `securestamp-mcp-doctor` and `securestamp-harness`, and
+> `@securestamp/execution-governance@0.1.1` exposes `securestamp-execution-governance` (Node
+> `>=22.22.3`; `0.1.0` rejects Node 22.23). Section §3 applies after
+> `npm install --save-dev @securestamp/mcp-guard`, and §4 after
+> `npm install --save-dev @securestamp/execution-governance`. The concepts in §1, §2 and §5–§7
+> apply today to the published Action Proof packages.
 
 ## 1. The model in one paragraph
 
@@ -126,10 +127,10 @@ immutable with respect to the revision it started from.
 ```
 
 ```bash
-# @securestamp/execution-governance is not on npm yet. Maintainers run it from a checkout:
-pnpm --filter @securestamp/execution-governance build
-node packages/execution-governance/dist/cli.js validate scenario.json
-node packages/execution-governance/dist/cli.js run scenario.json --hold-before=step-1
+npm install --save-dev @securestamp/execution-governance
+
+npx securestamp-execution-governance validate scenario.json
+npx securestamp-execution-governance run scenario.json --hold-before=step-1
 ```
 
 `validate` prints the scenario id, revision and digest. `run` executes the **synthetic**
