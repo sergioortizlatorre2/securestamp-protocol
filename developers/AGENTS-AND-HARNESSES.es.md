@@ -7,11 +7,11 @@ shell, al sistema de archivos, a scripts, a llamadas directas a APIs y a las aut
 que su harness le deja alcanzar. Esta guía cubre el modelo técnico que usa SecureStamp para esa
 superficie más amplia y las herramientas que lo implementan.
 
-> **Disponibilidad, verificada el 2026-09-30.** El paquete publicado `@securestamp/mcp-guard@0.1.0`
-> expone sólo el binario de servidor `securestamp-mcp-guard`, y `@securestamp/execution-governance`
-> **todavía no está en npm**. Todo lo de [§3](#3-doctor-diagnosticar-los-archivos-que-ya-tenés) y
-> [§4](#4-el-escenario-portable) describe la próxima release de esos paquetes. Los comandos se
-> muestran tal como van a correr; hasta que la release esté en el registro no se instalan. Los
+> **Disponibilidad, verificada el 2026-10-05.** El paquete publicado `@securestamp/mcp-guard@0.2.0`
+> expone `securestamp-mcp-guard`, `securestamp-mcp-doctor` y `securestamp-harness`. El paquete
+> separado `@securestamp/execution-governance` **todavía no está en npm**. La sección §3 aplica
+> hoy después de `npm install --save-dev @securestamp/mcp-guard`; la CLI del escenario portable
+> de §4 sigue disponible sólo desde el código fuente hasta que se publique ese paquete. Los
 > conceptos de §1, §2 y §5–§7 aplican hoy a los paquetes publicados de Action Proof.
 
 ## 1. El modelo en un párrafo
@@ -37,7 +37,7 @@ comandos, hooks ni expresiones de ellos, nunca resuelve secretos ni valida token
 sobrescribe el original: una corrección se propone como copia revisable.
 
 ```bash
-npm install --save-dev @securestamp/mcp-guard   # próxima release
+npm install --save-dev @securestamp/mcp-guard
 
 # JSON con un objeto mcpServers (stdio)
 npx securestamp-mcp-doctor scan .mcp.json --propose
@@ -126,10 +126,10 @@ una corrida es inmutable respecto de la revisión con la que empezó.
 ```
 
 ```bash
-npm install --save-dev @securestamp/execution-governance   # próxima release
-
-npx securestamp-execution-governance validate scenario.json
-npx securestamp-execution-governance run scenario.json --hold-before=step-1
+# @securestamp/execution-governance todavía no está en npm. Maintainers lo corren desde un checkout:
+pnpm --filter @securestamp/execution-governance build
+node packages/execution-governance/dist/cli.js validate scenario.json
+node packages/execution-governance/dist/cli.js run scenario.json --hold-before=step-1
 ```
 
 `validate` imprime el id del escenario, la revisión y el digest. `run` ejecuta la referencia

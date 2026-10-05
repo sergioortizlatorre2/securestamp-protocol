@@ -6,9 +6,8 @@
 > **No agent action without Proof-of-Intent.**
 
 <sub>Every endpoint, tool name, dist-tag and version on this page was checked against the deployed
-services and the public npm registry on **2026-09-06** — including downloading and opening the
-published tarballs — and re-checked on **2026-09-30**: dist-tags, the MCP Guard service version
-and its nine-tool catalog were unchanged. Anything that could not be verified is listed under
+services and the public npm registry on **2026-10-05** — including downloading and opening the
+published tarballs. Anything that could not be verified is listed under
 [Live / prerelease / pending](#live--prerelease--pending), together with the defects that check
 turned up.</sub>
 
@@ -105,8 +104,9 @@ execution-layer tools:
 | `get_source_envelope` | Latest tenant-scoped signed source envelope from an enrolled device. **Contains no message body.** |
 
 `read_message_request` exists only in the local wrapper's source and is deliberately never
-exposed remotely. Note the published `@securestamp/mcp-guard@0.1.0` build ships only the first
-six tools above — see [Getting Started §3](developers/GETTING-STARTED.en.md#3-run-it-over-stdio-instead).
+exposed remotely. Note the published `@securestamp/mcp-guard@0.2.0` build ships the first six
+remote tools above; its Doctor and Harness binaries are local CLIs, not remote MCP tools — see
+[Getting Started §3](developers/GETTING-STARTED.en.md#3-run-it-over-stdio-instead).
 
 ```bash
 curl -sS https://mcp.securestamp.online/mcp \
@@ -135,8 +135,8 @@ stays outside the agent**, and coverage is limited to declared and tested routes
   an unevaluated route is never reported as protected.
 
 Commands, contracts and limits: **[Agents and harnesses](developers/AGENTS-AND-HARNESSES.en.md)**.
-The Doctor binaries and `@securestamp/execution-governance` ship in the next release; see the
-availability note there.
+The Doctor and Harness binaries are already in the published `@securestamp/mcp-guard@0.2.0`;
+the `@securestamp/execution-governance` CLI remains source-only. See the availability note there.
 
 ### Action Proof and the Execution Guardian
 
@@ -199,7 +199,7 @@ Seven packages are public on npm under **Apache-2.0**.
 | Package | What it is | `latest` | `beta` | `beta-unverified` |
 | --- | --- | --- | --- | --- |
 | [`@securestamp/cli`](https://www.npmjs.com/package/@securestamp/cli) | Terminal trust checks — `ss check`, `ss registry`, `ss batch`, `ss status`. **Stable.** | `1.0.1` | — | — |
-| [`@securestamp/mcp-guard`](https://www.npmjs.com/package/@securestamp/mcp-guard) | Local stdio wrapper for hosts that only speak stdio. | `0.1.0` | — | — |
+| [`@securestamp/mcp-guard`](https://www.npmjs.com/package/@securestamp/mcp-guard) | Local stdio wrapper plus the Doctor and Harness local CLIs. | `0.2.0` | — | — |
 | [`@securestamp/action-proof-verify`](https://www.npmjs.com/package/@securestamp/action-proof-verify) | Offline, dependency-free verifier for receipts and proof bundles. No network. **Start here.** | `0.3.0-beta.1` | — | `0.3.0-beta.3` |
 | [`@securestamp/action-registry`](https://www.npmjs.com/package/@securestamp/action-registry) | Dependency-free declarative registry of operations. | `0.3.0-beta.1` | — | `0.3.0-beta.2` |
 | [`@securestamp/action-proof`](https://www.npmjs.com/package/@securestamp/action-proof) | Protocol primitives: source envelopes, canonical effects, grants, bundles, signing. | `0.2.0-beta.1` | `0.2.0-beta.1` | `0.3.0-beta.2` |
@@ -216,12 +216,12 @@ why their `latest` runs ahead of the emitter's.
 **No published version carries an npm provenance attestation.** Verify a tarball by its
 integrity hash and its contents, not by assuming a signed build chain.
 
-**Next release — not on the registry as of 2026-09-30.** `@securestamp/mcp-guard` adds the
-`securestamp-mcp-doctor` and `securestamp-harness` binaries next to `securestamp-mcp-guard`, and a
-new `@securestamp/execution-governance` package (Apache-2.0, Node `>=22.22.3`) carries the
+**Execution Governance package — not on the registry as of 2026-10-05.** The published
+`@securestamp/mcp-guard@0.2.0` already includes the `securestamp-mcp-doctor` and
+`securestamp-harness` binaries next to `securestamp-mcp-guard`. The separate
+`@securestamp/execution-governance` package (Apache-2.0, Node `>=22.22.3`) carries the
 portable scenario, control-plane and report contracts plus the `securestamp-execution-governance`
-binary. Until they are published, `npm install` of those names resolves only what the table above
-lists. See [Agents and harnesses](developers/AGENTS-AND-HARNESSES.en.md).
+binary, but remains source-only for maintainers. See [Agents and harnesses](developers/AGENTS-AND-HARNESSES.en.md).
 
 ### The CLI
 
@@ -337,7 +337,7 @@ the docs at [securestamp.org/en/docs/action-proof](https://securestamp.org/en/do
 ### Live / prerelease / pending
 
 Each row below was checked against the deployed service or the public registry on
-**2026-09-06** and re-checked on **2026-09-30**. Nothing here is asserted from a document.
+**2026-10-05**. Nothing here is asserted from a document.
 
 **Live — stable, externally checkable**
 
@@ -350,7 +350,7 @@ Each row below was checked against the deployed service or the public registry o
 | OAuth protected-resource metadata | `/.well-known/oauth-protected-resource` `200` |
 | Public receipt lookup | `/api/action/receipts/<id>` — `404` on an unknown id |
 | `@securestamp/cli` | `1.0.1` on `latest`; every command run against production |
-| `@securestamp/mcp-guard` | `0.1.0` on `latest` |
+| `@securestamp/mcp-guard` | `0.2.0` on `latest`; includes Doctor and Harness local CLIs |
 | SSFML signed pack channel | `stable`, engine `2.5.0`, rollout 100 %, signature present |
 | SSFML engine + tests | `MODEL_VERSION = '2.5.0'`; 1 828 tests across 82 files passing |
 | Credential-free Guardian bridge | published tarball has 2 deps, no provider SDK, no HTTP listener |
@@ -377,8 +377,9 @@ stays at `0.3.0-beta.1` deliberately.
   but that rename ships only when `@securestamp/action-proof` is next released.
 - No published version of any package carries an npm provenance attestation, including the two
   most recent releases.
-- The published `@securestamp/mcp-guard@0.1.0` build exposes only six tools; the execution-layer
-  tools and the local reader exist in source but are not in that release.
+- The published `@securestamp/mcp-guard@0.2.0` build exposes the same six remote guard tools;
+  Doctor and Harness are local CLIs, while the execution-layer tools and local reader remain
+  outside the published remote catalog.
 - Node-operator materials are **not in this repository**. There is no `node/` directory here,
   so any instruction to `cd securestamp-protocol/node` cannot work.
 
@@ -512,7 +513,7 @@ capa de ejecución:
 | `get_source_envelope` | Último source envelope firmado del tenant desde un dispositivo enrolado. **No contiene el cuerpo del mensaje.** |
 
 `read_message_request` existe sólo en el código del wrapper local y deliberadamente nunca se
-expone de forma remota. Ojo: la build publicada de `@securestamp/mcp-guard@0.1.0` incluye
+expone de forma remota. Ojo: la build publicada de `@securestamp/mcp-guard@0.2.0` incluye
 únicamente las primeras seis tools de arriba — ver
 [Guía de inicio §3](developers/GETTING-STARTED.es.md#3-correrlo-por-stdio).
 
@@ -545,8 +546,9 @@ y probadas.
   separados; una ruta sin evaluar nunca se informa como protegida.
 
 Comandos, contratos y límites: **[Agentes y harnesses](developers/AGENTS-AND-HARNESSES.es.md)**.
-Los binarios de Doctor y `@securestamp/execution-governance` salen en la próxima release; ver la
-nota de disponibilidad ahí.
+Los binarios de Doctor y Harness ya están en `@securestamp/mcp-guard@0.2.0`; la CLI de
+`@securestamp/execution-governance` sigue disponible sólo desde el código fuente. Ver la nota de
+disponibilidad ahí.
 
 ### Action Proof y el Execution Guardian
 
@@ -609,7 +611,7 @@ Siete paquetes públicos en npm bajo **Apache-2.0**.
 | Paquete | Qué es | `latest` | `beta` | `beta-unverified` |
 | --- | --- | --- | --- | --- |
 | [`@securestamp/cli`](https://www.npmjs.com/package/@securestamp/cli) | Chequeos de confianza desde la terminal — `ss check`, `ss registry`, `ss batch`, `ss status`. **Estable.** | `1.0.1` | — | — |
-| [`@securestamp/mcp-guard`](https://www.npmjs.com/package/@securestamp/mcp-guard) | Wrapper stdio local para hosts que sólo hablan stdio. | `0.1.0` | — | — |
+| [`@securestamp/mcp-guard`](https://www.npmjs.com/package/@securestamp/mcp-guard) | Wrapper stdio local más las CLIs locales Doctor y Harness. | `0.2.0` | — | — |
 | [`@securestamp/action-proof-verify`](https://www.npmjs.com/package/@securestamp/action-proof-verify) | Verificador offline y sin dependencias de receipts y proof bundles. Sin red. **Empezá acá.** | `0.3.0-beta.1` | — | `0.3.0-beta.3` |
 | [`@securestamp/action-registry`](https://www.npmjs.com/package/@securestamp/action-registry) | Registro declarativo de operaciones, sin dependencias. | `0.3.0-beta.1` | — | `0.3.0-beta.2` |
 | [`@securestamp/action-proof`](https://www.npmjs.com/package/@securestamp/action-proof) | Primitivas del protocolo: source envelopes, efectos canónicos, grants, bundles, firma. | `0.2.0-beta.1` | `0.2.0-beta.1` | `0.3.0-beta.2` |
@@ -626,12 +628,13 @@ emita. Por eso su `latest` va más adelante que el del emisor.
 **Ninguna versión publicada lleva attestation de provenance de npm.** Verificá un tarball por su
 hash de integridad y su contenido, no asumiendo una cadena de build firmada.
 
-**Próxima release — no está en el registro al 2026-09-30.** `@securestamp/mcp-guard` suma los
-binarios `securestamp-mcp-doctor` y `securestamp-harness` junto a `securestamp-mcp-guard`, y un
-paquete nuevo, `@securestamp/execution-governance` (Apache-2.0, Node `>=22.22.3`), trae los
+**Paquete de Execution Governance — no está en el registro al 2026-10-05.** La versión publicada
+`@securestamp/mcp-guard@0.2.0` ya incluye los binarios Doctor y Harness junto a
+`securestamp-mcp-guard`. El paquete aparte `@securestamp/execution-governance` (Apache-2.0, Node
+`>=22.22.3`) trae los
 contratos del escenario portable, del plano de control y de los reportes, más el binario
-`securestamp-execution-governance`. Hasta que se publiquen, `npm install` de esos nombres resuelve
-sólo lo que lista la tabla de arriba. Ver [Agentes y harnesses](developers/AGENTS-AND-HARNESSES.es.md).
+`securestamp-execution-governance`, pero sigue disponible sólo desde el código fuente para
+maintainers. Ver [Agentes y harnesses](developers/AGENTS-AND-HARNESSES.es.md).
 
 ### El CLI
 
@@ -746,8 +749,7 @@ documentación en [securestamp.org/es/docs/action-proof](https://securestamp.org
 ### Live / prerelease / pendiente
 
 Cada fila de abajo se comprobó contra el servicio desplegado o el registro público el
-**2026-09-06** y se volvió a comprobar el **2026-09-30**. Nada de esto se afirma a partir de un
-documento.
+**2026-10-05**. Nada de esto se afirma a partir de un documento.
 
 **Live — estable, comprobable desde afuera**
 
@@ -760,7 +762,7 @@ documento.
 | Metadata OAuth de protected-resource | `/.well-known/oauth-protected-resource` `200` |
 | Lookup público de receipts | `/api/action/receipts/<id>` — `404` con un id inexistente |
 | `@securestamp/cli` | `1.0.1` en `latest`; todos sus comandos corridos contra producción |
-| `@securestamp/mcp-guard` | `0.1.0` en `latest` |
+| `@securestamp/mcp-guard` | `0.2.0` en `latest`; incluye las CLIs locales Doctor y Harness |
 | Canal firmado de packs SSFML | `stable`, motor `2.5.0`, rollout 100 %, firma presente |
 | Motor SSFML + tests | `MODEL_VERSION = '2.5.0'`; 1 828 tests en 82 archivos pasando |
 | Bridge Guardian credential-free | el tarball publicado tiene 2 deps, sin SDK de proveedor ni listener HTTP |
@@ -787,8 +789,9 @@ deliberadamente en `0.3.0-beta.1`.
   `action-proof`, pero ese rename sale recién cuando se publique `@securestamp/action-proof`.
 - Ninguna versión publicada de ningún paquete lleva attestation de provenance de npm, incluidos
   los dos releases más recientes.
-- La build publicada de `@securestamp/mcp-guard@0.1.0` expone sólo seis tools; las de la capa de
-  ejecución y el lector local existen en el código pero no en ese release.
+- La build publicada de `@securestamp/mcp-guard@0.2.0` expone las mismas seis tools remotas;
+  Doctor y Harness son CLIs locales, mientras las tools de la capa de ejecución y el lector local
+  quedan fuera del catálogo remoto publicado.
 - El material para operadores de nodo **no está en este repositorio**. Acá no hay directorio
   `node/`, así que cualquier instrucción de `cd securestamp-protocol/node` no puede funcionar.
 

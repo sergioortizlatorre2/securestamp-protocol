@@ -7,12 +7,12 @@ the file system, scripts, direct API calls and whatever automations its harness 
 reach. This guide covers the technical model SecureStamp uses for that wider surface and the
 tools that implement it.
 
-> **Availability, checked 2026-09-30.** The published `@securestamp/mcp-guard@0.1.0` exposes
-> only the `securestamp-mcp-guard` server binary, and `@securestamp/execution-governance` is
-> **not yet on npm**. Everything under [§3](#3-doctor-diagnose-the-files-you-already-have) and
-> [§4](#4-the-portable-scenario) describes the next release of those packages. Commands are
-> shown exactly as they will run; until the release is on the registry they will not install.
-> The concepts in §1, §2 and §5–§7 apply today to the published Action Proof packages.
+> **Availability, checked 2026-10-05.** The published `@securestamp/mcp-guard@0.2.0` exposes
+> `securestamp-mcp-guard`, `securestamp-mcp-doctor` and `securestamp-harness`. The separate
+> `@securestamp/execution-governance` package is **not yet on npm**. Section §3 applies today
+> after `npm install --save-dev @securestamp/mcp-guard`; §4's portable scenario CLI remains
+> source-only until that package is published. The concepts in §1, §2 and §5–§7 apply today to
+> the published Action Proof packages.
 
 ## 1. The model in one paragraph
 
@@ -38,7 +38,7 @@ hooks or expressions from them, never resolves secrets or validates tokens, and 
 overwrites the original: a correction is proposed as a reviewable copy.
 
 ```bash
-npm install --save-dev @securestamp/mcp-guard   # next release
+npm install --save-dev @securestamp/mcp-guard
 
 # JSON with an mcpServers object (stdio)
 npx securestamp-mcp-doctor scan .mcp.json --propose
@@ -126,10 +126,10 @@ immutable with respect to the revision it started from.
 ```
 
 ```bash
-npm install --save-dev @securestamp/execution-governance   # next release
-
-npx securestamp-execution-governance validate scenario.json
-npx securestamp-execution-governance run scenario.json --hold-before=step-1
+# @securestamp/execution-governance is not on npm yet. Maintainers run it from a checkout:
+pnpm --filter @securestamp/execution-governance build
+node packages/execution-governance/dist/cli.js validate scenario.json
+node packages/execution-governance/dist/cli.js run scenario.json --hold-before=step-1
 ```
 
 `validate` prints the scenario id, revision and digest. `run` executes the **synthetic**

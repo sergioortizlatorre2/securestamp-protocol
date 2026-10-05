@@ -8,7 +8,7 @@ Este es el camino práctico: conectar algo, instalar algo, verificar algo.
 Para los conceptos, leé el [README](../README.md) y el
 [Protocolo v0.2](../protocol/SECURESTAMP-PROTOCOL-v0.2.es.md).
 
-<sub>Endpoints, nombres de tools, dist-tags y versiones de esta página se verificaron en vivo el **2026-09-06**.</sub>
+<sub>Endpoints, nombres de tools, dist-tags y versiones de esta página se verificaron en vivo el **2026-10-05**.</sub>
 
 ---
 
@@ -169,9 +169,10 @@ SECURESTAMP_API_KEY=ss_live_... npx -y @securestamp/mcp-guard
 }
 ```
 
-**Lo que el `0.1.0` publicado realmente expone son seis tools**, no nueve: `authorize_action`,
+**Lo que el `0.2.0` publicado realmente expone de forma remota son seis tools**, no nueve: `authorize_action`,
 `analyze_message_intent`, `verify_counterparty`, `create_action_challenge`, `get_safe_next_step`
-e `issue_action_receipt`. Verificado abriendo el tarball publicado el 2026-09-06.
+e `issue_action_receipt`. El mismo tarball también incluye los binarios locales
+`securestamp-mcp-doctor` y `securestamp-harness`; no son tools MCP remotas. Verificado contra npm el 2026-10-05.
 
 Las tres tools de la capa de ejecución (`request_execution_grant`, `get_execution_status`,
 `get_source_envelope`) y el lector local `read_message_request` existen en el árbol de fuentes
@@ -196,7 +197,7 @@ Siete paquetes públicos, **Apache-2.0**.
 ```bash
 # estable, sin tag
 npm install -g @securestamp/cli                          # → 1.0.1
-npm install @securestamp/mcp-guard                        # → 0.1.0
+npm install @securestamp/mcp-guard                        # → 0.2.0 (MCP Guard + Doctor + Harness)
 
 # lo que te da `latest` en la línea Action Proof
 npm install @securestamp/action-proof                     # → 0.2.0-beta.1  (¡no 0.3!)
@@ -213,7 +214,7 @@ npm install @securestamp/action-proof-verify@beta-unverified  # → 0.3.0-beta.3
 | Paquete | Deps | Node | `latest` | `beta` | `beta-unverified` |
 | --- | --- | --- | --- | --- | --- |
 | `@securestamp/cli` | 3 | ≥20 | `1.0.1` | — | — |
-| `@securestamp/mcp-guard` | 0 | ≥20 | `0.1.0` | — | — |
+| `@securestamp/mcp-guard` | 0 | ≥20 | `0.2.0` | — | — |
 | `@securestamp/action-proof-verify` | 0 | ≥20 | `0.3.0-beta.1` | — | `0.3.0-beta.3` |
 | `@securestamp/action-registry` | 0 | ≥20 | `0.3.0-beta.1` | — | `0.3.0-beta.2` |
 | `@securestamp/action-proof` | 1 | ≥20 | `0.2.0-beta.1` | `0.2.0-beta.1` | `0.3.0-beta.2` |
