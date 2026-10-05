@@ -189,10 +189,11 @@ Run states: `queued · running · held · stopping · stopped · completed · fa
 
 Three claims are kept apart:
 
-- **Integrity verified** — the signature or digest matches. The report has not changed; that
-  does not make its observations true.
-- **Issuer trusted by this operator** — only relative to trust anchors the operator installs.
-  An anchor shipped inside the artifact does not make it trusted.
+- **Checksum is informational** — a report digest checks the bytes presented, but anyone who
+  can rewrite the report can recompute it; it is not issuer authentication.
+- **Signed evidence trusted by this operator** — a complete Action Proof bundle is verified
+  offline only against grant and transparency anchors installed outside the artifact, and it
+  binds the exact candidate, destination, authority and observed receipt result.
 - **Reproduced by a third party** — someone else ran the same pack and got the same result.
 
 A `FAIL`, a `SKIP` or an unevaluated route stays visible. An instrumentation failure leaves a
@@ -206,6 +207,8 @@ run `INCOMPLETE`, never `PASS`, and the absence of an event is never evidence of
 - It does not undo an effect that already happened — `hold` and `stop` are not rollback.
 - A receipt shows integrity and scope under its anchors; it does not show that the approved
   code is benign or that anyone independent audited it.
+- Missing or indeterminate evidence remains a limitation; it does not close the gate. A redacted
+  summary identifies the evidence it supports but never inherits the signature of the full bundle.
 - It is not an organization-wide kill switch: the first version controls the chosen run and
   its declared runners.
 - Compatibility is stated per profile, version and environment. A result on one harness does

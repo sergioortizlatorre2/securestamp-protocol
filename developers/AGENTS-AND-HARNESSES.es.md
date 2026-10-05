@@ -188,10 +188,11 @@ Estados de corrida: `queued · running · held · stopping · stopped · complet
 
 Tres afirmaciones se mantienen separadas:
 
-- **Integridad verificada** — la firma o el digest coinciden. El reporte no cambió; eso no vuelve
-  verdaderas sus observaciones.
-- **Emisor confiable para este operador** — sólo respecto de anchors que instala el operador. Un
-  anchor que viene dentro del artefacto no lo vuelve confiable.
+- **Checksum informativo** — el digest comprueba los bytes presentados, pero quien pueda
+  reescribir el reporte puede recalcularlo; no autentica al emisor.
+- **Evidencia firmada confiable para este operador** — un bundle Action Proof completo se verifica
+  offline sólo contra anchors de grant y transparencia instalados fuera del artefacto, y enlaza el
+  candidato exacto, el destino, la autoridad y el resultado observado del receipt.
 - **Reproducido por un tercero** — otra persona corrió el mismo pack y obtuvo el mismo resultado.
 
 Un `FAIL`, un `SKIP` o una ruta sin evaluar quedan a la vista. Un fallo de instrumentación deja la
@@ -205,6 +206,8 @@ corrida `INCOMPLETE`, nunca `PASS`, y la ausencia de un evento nunca es evidenci
 - No deshace un efecto que ya ocurrió: `hold` y `stop` no son rollback.
 - Un receipt demuestra integridad y alcance bajo sus anchors; no demuestra que el código aprobado
   sea benigno ni que alguien independiente lo haya auditado.
+- La evidencia ausente o indeterminada conserva su limitación y no cierra el gate. Un resumen
+  redactado identifica la evidencia que respalda, pero nunca hereda la firma del bundle completo.
 - No es un kill switch para toda la organización: la primera versión controla la corrida elegida
   y sus runners declarados.
 - La compatibilidad se declara por perfil, versión y entorno. Un resultado en un harness no se

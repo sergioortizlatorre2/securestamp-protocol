@@ -10,7 +10,7 @@ packages. Contributions should stay technical and verifiable.
 
 - Describe behaviour that can be checked against a published package, a public endpoint or
   the specification. Mark anything unreleased as such.
-- Do not add pricing, plans, customer names, business metrics, internal infrastructure
+- Do not add commercial terms, customer names, business metrics, internal infrastructure
   identifiers or non-public endpoints.
 - Report vulnerabilities privately to **security@securestamp.org**, not in a public issue.
 
