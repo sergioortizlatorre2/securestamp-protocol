@@ -34,3 +34,11 @@ SAES tiene dos tipos de material, y cada uno lleva su licencia.
   SecureStamp.
 - **Un nivel.** Copiar el texto no certifica nada. Un nivel sale de la evidencia, la calcule quien
   la calcule.
+
+## Relación con SecureStamp Online
+
+Las licencias anteriores cubren únicamente los materiales enumerados en la tabla. Permiten usar
+el estándar y ejecutar o adaptar los paquetes bajo sus condiciones, incluida la infraestructura
+propia; no requieren una licencia comercial adicional de SecureStamp. No conceden acceso al
+servicio alojado de SecureStamp Online. Sus cupos y planes rigen la evaluación gestionada, las
+fichas firmadas por SecureStamp, el historial y las funciones de equipo u organización.

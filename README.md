@@ -185,7 +185,7 @@ Design invariants a developer should know before integrating:
 
 ### npm packages
 
-Seven packages are public on npm under **Apache-2.0**.
+Eight packages are public on npm under **Apache-2.0**.
 
 > **Read this before `npm install`.** `npm install <pkg>` resolves the **`latest`** tag, and for
 > several packages `latest` is deliberately **older** than the newest prerelease. The `0.3.0`
@@ -599,7 +599,7 @@ Invariantes de diseño que conviene conocer antes de integrar:
 
 ### Paquetes npm
 
-Siete paquetes públicos en npm bajo **Apache-2.0**.
+Ocho paquetes públicos en npm bajo **Apache-2.0**.
 
 > **Leé esto antes de `npm install`.** `npm install <pkg>` resuelve el tag **`latest`**, y en
 > varios paquetes `latest` es deliberadamente **más viejo** que el prerelease más nuevo. Los

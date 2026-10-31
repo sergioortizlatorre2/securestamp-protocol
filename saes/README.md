@@ -56,6 +56,8 @@ Las respuestas quedan escritas, con su razón, aunque sean un rechazo.
 
 El texto de SAES (este documento, [EVIDENCE-BUNDLE.md](EVIDENCE-BUNDLE.md) e
 [INDEPENDENCE.md](INDEPENDENCE.md)) se publica bajo [CC BY 4.0](../LICENSE): se puede copiar,
-traducir y adaptar, también con fines comerciales, citando la fuente e indicando los cambios. Las
-herramientas son Apache 2.0. La licencia no incluye las marcas SecureStamp ni SAES. Detalle y
+traducir y adaptar, también con fines comerciales, citando la fuente e indicando los cambios. El
+código y las herramientas de SAES siguen la licencia declarada por cada paquete; los paquetes
+publicados actualmente declaran Apache-2.0. Estas licencias no incluyen las marcas SecureStamp ni
+SAES. Detalle y
 atribución sugerida: [LICENSE-SPEC.md](LICENSE-SPEC.md).
